@@ -1,0 +1,9 @@
+{
+  "env": {
+    "hostName": "localhost",
+    "hostPort": "8080",
+    "mongodbPW": "PW55publ",
+    "mongodbUN": "PublicUser",
+    "pageLength": 10
+  }
+}

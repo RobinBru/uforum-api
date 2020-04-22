@@ -1,0 +1,26 @@
+{
+  "page": 1,
+  "count": 1,
+  "startIndex": 0,
+  "endIndex": 1,
+  "pagesLeft": false,
+  "answers": [
+    {
+      "id": "messageId105",
+      "title": "Het antwoord is 2",
+      "text": "",
+      "group": "groupId101",
+      "postedOn": "4/15/2020",
+      "isAuthor": true,
+      "newestAnswerSince": "4/15/2020",
+      "upvotes": 2,
+      "hasUpvoted": 1,
+      "answers": 1,
+      "hints": 0,
+      "tags": [
+        "testVraag",
+        "Wiskunde"
+      ]
+    }
+  ]
+}

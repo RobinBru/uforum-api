@@ -1,0 +1,18 @@
+{
+  "id": "messageId101",
+  "title": "Dit is een testVraag",
+  "text": "Hoeveel is 1 + 1",
+  "group": "groupId101",
+  "author": "UserId101",
+  "postedOn": "4/15/2020",
+  "isAuthor": true,
+  "newestAnswerSince": "4/15/2020",
+  "upvotes": 2,
+  "hasUpvoted": 1,
+  "answers": 1,
+  "hints": 0,
+  "tags": [
+    "testVraag",
+    "Wiskunde"
+  ]
+}

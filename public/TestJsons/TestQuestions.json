@@ -1,0 +1,44 @@
+{
+  "page": 1,
+  "count": 2,
+  "startIndex": 0,
+  "endIndex": 2,
+  "pagesLeft": false,
+  "questions": [
+    {
+      "id": "messageId101",
+      "title": "Dit is een testVraag",
+      "text": "Hoeveel is 1 + 1",
+      "group": "groupId101",
+      "author": "UserId101",
+      "postedOn": "4/15/2020",
+      "isAuthor": true,
+      "newestAnswerSince": "4/15/2020",
+      "upvotes": 2,
+      "hasUpvoted": 1,
+      "answers": 1,
+      "hints": 0,
+      "tags": [
+        "testVraag",
+        "Wiskunde"
+      ]
+    },
+    {
+      "id": "messageId102",
+      "title": "Wie is de prof van dit vak",
+      "text": "Ik moet een mail sturen naar de prof, maar ik vindt zijn email adress niet\n\nEDIT: gevonden",
+      "group": "groupId101",
+      "author": "UserId101",
+      "postedOn": "2/15/2020",
+      "isAuthor": true,
+      "newestAnswerSince": "2/15/2020",
+      "upvotes": -1,
+      "hasUpvoted": -1,
+      "answers": 0,
+      "hints": 0,
+      "tags": [
+        "testVraag"
+      ]
+    }
+  ]
+}

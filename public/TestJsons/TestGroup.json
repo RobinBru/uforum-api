@@ -1,0 +1,14 @@
+{
+  "id": "groupId101",
+  "name": "SELab",
+  "text": "Dit is de groep voor het vak SELab",
+  "public": true,
+  "isModerator": true,
+  "lastMessageSince": "4/15/2020",
+  "moderators": [
+    {
+      "id": "UserId101",
+      "name": "UserName101"
+    }
+  ]
+}

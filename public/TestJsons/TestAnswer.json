@@ -1,0 +1,19 @@
+{
+  "id": "messageId105",
+  "title": "Het antwoord is 2",
+  "text": "",
+  "group": "groupId101",
+  "author": "UserId101",
+  "postedOn": "4/15/2020",
+  "nestedIn": "messageId101",
+  "isAuthor": true,
+  "newestAnswerSince": "4/15/2020",
+  "upvotes": 2,
+  "hasUpvoted": 1,
+  "answers": 1,
+  "hints": 0,
+  "tags": [
+    "testVraag",
+    "Wiskunde"
+  ]
+}
