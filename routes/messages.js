@@ -8,7 +8,7 @@ const Group = require('../models/group');
 
 
 router.get('/:messageId', function(req, res, next) {
-  let userId = req.body.userId;
+  let userId = req.query.userId;
   if (!userId) {
     return res.status(400).json({ message: "Unknown userId" })
   }
@@ -98,7 +98,7 @@ function formatAnswer(answer, userId) {
 }
 
 router.get('/:messageId/answers', function(req, res, next) {
-  let userId = req.body.userId;
+  let userId = req.query.userId;
   if (!userId) {
     return res.status(400).json({ message: "Unknown userId" })
   }

@@ -89,8 +89,8 @@ function formatQuestion(question, userId) {
 }
 
 router.get('/:groupId/questions', function(req, res, next) {
-  let page = req.body.page;
-  let userId = req.body.userId;
+  let page = req.query.page;
+  let userId = req.query.userId;
   if (!userId) {
     return res.status(400).json({ message: "Unknown userId" })
   }
