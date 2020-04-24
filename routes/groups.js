@@ -72,7 +72,7 @@ function formatQuestion(question, userId) {
       return {
         id: question._id,
         title: question.title,
-        text: question.description,
+        text: question.content,
         postedOn: question.postedOn,
         isAuthor: question.author == userId,
         newestAnswerSince: lastPosted,
