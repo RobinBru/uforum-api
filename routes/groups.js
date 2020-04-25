@@ -91,6 +91,7 @@ function formatQuestion(question, userId) {
 router.get('/:groupId/questions', function(req, res, next) {
   let page = req.query.page;
   let userId = req.query.userId;
+  let dateParam = req.query.date;
   if (!userId) {
     return res.status(400).json({ message: "Unknown userId" })
   }
@@ -100,7 +101,21 @@ router.get('/:groupId/questions', function(req, res, next) {
   }
   let start = (page - 1) * pageLength;
   let pagesLeft;
-  Message.find({ group: req.params.groupId, type: "Question" })
+  let findParameters = { group: req.params.groupId, type: "Question" };
+  if (dateParam) {
+    switch (dateParam) {
+      case "day":
+        findParameters.postedOn = { $gte: new Date(new Date() - 60 * 60 * 24 * 1000) }
+        break;
+      case "week":
+        findParameters.postedOn = { $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000) }
+        break;
+      case "month":
+        findParameters.postedOn = { $gte: new Date(new Date() - 30 * 7 * 60 * 60 * 24 * 1000) }
+        break;
+    }
+  }
+  Message.find(findParameters)
     .sort({ postedOn: -1 })
     .skip(start)
     .limit(pageLength + 1)
@@ -111,6 +126,9 @@ router.get('/:groupId/questions', function(req, res, next) {
       return Promise.all(result.map(mess => { return formatQuestion(mess, userId) }));
     })
     .then(result => {
+      if (req.params.sort === "upvotes") {
+        result.sort((a, b) => a.upvotes - b.upvotes);
+      }
       res.status(200).json({
         page: page,
         count: result.length,
