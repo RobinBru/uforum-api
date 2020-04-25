@@ -126,7 +126,7 @@ router.get('/:groupId/questions', function(req, res, next) {
       return Promise.all(result.map(mess => { return formatQuestion(mess, userId) }));
     })
     .then(result => {
-      if (req.params.sort === "upvotes") {
+      if (req.query.sort === "upvotes") {
         result.sort((a, b) => a.upvotes - b.upvotes);
       }
       res.status(200).json({
