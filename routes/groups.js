@@ -92,6 +92,7 @@ router.get('/:groupId/questions', function(req, res, next) {
   let page = req.query.page;
   let userId = req.query.userId;
   let dateParam = req.query.date;
+  let searchQuery = req.query.search;
   if (!userId) {
     return res.status(400).json({ message: "Unknown userId" })
   }
@@ -99,9 +100,12 @@ router.get('/:groupId/questions', function(req, res, next) {
   if (!page) {
     page = 1
   }
+  let findParameters = { group: req.params.groupId, type: "Question" }
+  if (searchQuery) {
+    findParameters.title = new RegExp(`.*${searchQuery}.*`, "i");
+  }
   let start = (page - 1) * pageLength;
   let pagesLeft;
-  let findParameters = { group: req.params.groupId, type: "Question" };
   if (dateParam) {
     switch (dateParam) {
       case "day":
