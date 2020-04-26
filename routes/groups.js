@@ -169,59 +169,59 @@ router.get('/:groupId/tags', (req, res, next) => {
 
 
 router.get('/:groupId/questions', function(req, res, next) {
-    let page = req.query.page;
-    let userId = req.query.userId;
-    let dateParam = req.query.date;
-    let searchQuery = req.query.search;
-    if (!userId) {
-        return res.status(400).json({ message: "Unknown userId" })
+  let page = req.query.page;
+  let userId = req.query.userId;
+  let dateParam = req.query.date;
+  let searchQuery = req.query.search;
+  if (!userId) {
+    return res.status(400).json({ message: "Unknown userId" })
+  }
+  let pageLength = process.env.pageLength * 1;
+  if (!page) {
+    page = 1
+  }
+  let findParameters = { group: req.params.groupId, type: "Question" }
+  if (searchQuery) {
+    findParameters.title = new RegExp(`.*${searchQuery}.*`, "i");
+  }
+  let start = (page - 1) * pageLength;
+  let pagesLeft;
+  if (dateParam) {
+    switch (dateParam) {
+      case "day":
+        findParameters.postedOn = { $gte: new Date(new Date() - 60 * 60 * 24 * 1000) }
+        break;
+      case "week":
+        findParameters.postedOn = { $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000) }
+        break;
+      case "month":
+        findParameters.postedOn = { $gte: new Date(new Date() - 30 * 7 * 60 * 60 * 24 * 1000) }
+        break;
     }
-    let pageLength = process.env.pageLength * 1;
-    if (!page) {
-        page = 1
-    }
-    let findParameters = { group: req.params.groupId, type: "Question" }
-    if (searchQuery) {
-        findParameters.title = new RegExp(`.*${searchQuery}.*`, "i");
-    }
-    let start = (page - 1) * pageLength;
-    let pagesLeft;
-    if (dateParam) {
-        switch (dateParam) {
-            case "day":
-                findParameters.postedOn = { $gte: new Date(new Date() - 60 * 60 * 24 * 1000) }
-                break;
-            case "week":
-                findParameters.postedOn = { $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000) }
-                break;
-            case "month":
-                findParameters.postedOn = { $gte: new Date(new Date() - 30 * 7 * 60 * 60 * 24 * 1000) }
-                break;
-        }
-    }
-    Message.find({ group: req.params.groupId, type: "Question" })
-        .sort({ postedOn: -1 })
-        .skip(start)
-        .limit(pageLength + 1)
-        .exec()
-        .then(result => {
-            pagesLeft = result.length > pageLength;
-            result = result.slice(0, pageLength);
-            return Promise.all(result.map(mess => { return formatQuestion(mess, userId) }));
-        })
-        .then(result => {
-            res.status(200).json({
-                page: page,
-                count: result.length,
-                startIndex: start,
-                endIndex: start + result.length,
-                pagesLeft: pagesLeft,
-                questions: result
-            });
-        })
-        .catch(err => {
-            res.status(400).json({ message: err.message })
-        });
+  }
+  Message.find(findParameters)
+    .sort({ postedOn: -1 })
+    .skip(start)
+    .limit(pageLength + 1)
+    .exec()
+    .then(result => {
+      pagesLeft = result.length > pageLength;
+      result = result.slice(0, pageLength);
+      return Promise.all(result.map(mess => { return formatQuestion(mess, userId) }));
+    })
+    .then(result => {
+      res.status(200).json({
+        page: page,
+        count: result.length,
+        startIndex: start,
+        endIndex: start + result.length,
+        pagesLeft: pagesLeft,
+        questions: result
+      });
+    })
+    .catch(err => {
+      res.status(400).json({ message: err.message })
+    });
 });
 
 router.put('/:groupId/questions', function(req, res, next) {
