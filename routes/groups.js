@@ -7,11 +7,60 @@ var User = require('../models/user');
 var Message = require('../models/message');
 var Upvote = require('../models/upvote');
 
+router.get('/', function (req, res, next) {
+    let name = req.query.name;
+    let page = req.query.page;
+    if (!name) {
+        return res.status(400).json({message: "Empty search not allowed"})
+    }
+    let pageLength = process.env.pageLength * 1;
+    if (!page){
+        page = 1
+    }
+    let start = (page - 1) * pageLength;
+    let regex = new RegExp(name.trim());
+
+    Group.find({public: true, name: {$regex: regex, $options: "i"}})
+        .sort({name: 1})
+        .skip(start)
+        .limit(pageLength + 1)
+        .populate("admins", "_id name email_address")
+        .exec()
+        .then(result => {
+            let pagesLeft = result.length > pageLength;
+            result = result.slice(0, pageLength);
+            res.json({page: page,
+                count: result.length,
+                startIndex: start,
+                endIndex: start + result.length,
+                pagesLeft: pagesLeft,
+                groups: result.map(groep =>
+            {
+                return {
+                    id: groep._id,
+                    name: groep.name,
+                    text: groep.description,
+                    public: groep.public,
+                    moderators: groep.admins.map(user => {
+                        return {
+                            name: user.name,
+                            email: user.email_address
+                        }
+                    })
+                }
+            })})
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(400).send("failed")
+        })
+});
+
 router.put('/', function(req, res, next) {
     let moderators = req.body.moderators;
     let modReturnable = [];
     User.find({email_address: {$in: moderators}})
-        .select('_id name email_adress')
+        .select('_id name email_address')
         .exec()
         .then(result => {
             console.log(result);
