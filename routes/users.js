@@ -117,8 +117,8 @@ router.delete('/:userId/groups/:groupId', function (req, res, next) {
         .then(result => {
             res.status(200).send("ok")
         })
-        .catch(
+        .catch(err => {
             res.status(400).send("fail")
-        )
+        })
 });
 module.exports = router;
