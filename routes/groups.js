@@ -189,7 +189,7 @@ router.get('/:groupId/questions', function(req, res, next) {
         break;
     }
   }
-  Message.find({ group: req.params.groupId, type: "Question" })
+  Message.find(findParameters)
     .sort({ postedOn: -1 })
     .skip(start)
     .limit(pageLength + 1)
