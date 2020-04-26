@@ -1,5 +1,5 @@
 # GET `/login`
-## Body
+## Query
 ```json
 {
     "email": "<someEmail>",
@@ -48,7 +48,7 @@
 ```
 
 # GET `/user/:userId`
-## Body
+## Query
 ```
 empty
 ```
@@ -68,10 +68,11 @@ empty
 ```
 
 
-# GET `/user/:userId/groups?page=<nr>`
-## Body
+# GET `/user/:userId/groups`
+## Query
 ```json
 {
+    "page": "<nr>",
     "filterOptions": {"opt": "val"}
 }
 ```
@@ -139,6 +140,41 @@ empty
   "message": "Unknown userId | Unknown groupId"
 }
 ```
+
+
+# GET `/groups`
+## Query
+```json
+{
+  "name": "<someGroupName>",
+  "page": "<nr>"
+}
+```
+## Response
+```json
+{
+    "page": "<nr>",
+    "count": "<listLength>",
+    "startIndex": "<index>",
+    "endIndex": "<index>",
+    "pagesLeft": "true | false",
+    "groups": [
+        {
+            "id": "<someGroupId>",
+            "name": "<someGroupName>",
+            "text": "<someGroupDescription>",
+            "public": "true | false",
+            "moderators": [
+                  {
+                    "name": "<someUserName>",
+                    "email": "<someUserMail>"
+                  }     
+            ] 
+        }
+    ]
+}
+```
+
 
 # PUT `/groups`
 ## Body
@@ -332,7 +368,7 @@ empty
     "title": "<someTitle>",
     "text": "<someDescription>",
     "author": "<someUserId>",
-	"type": "Hint | Answer"
+	"type": "Hint | Answer",
     "tags": [
         "<someTag>"    
     ]
