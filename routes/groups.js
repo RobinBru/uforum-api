@@ -60,7 +60,7 @@ router.get('/', function(req, res, next) {
 router.put('/', function(req, res, next) {
     let creator = req.body.creator;
     if (!creator){
-        return res.status(400).send("Creator neccesary")
+        return res.status(400).send("Creator necessary")
     }
     let moderators = req.body.moderators;
     let moderatorIds;
