@@ -184,7 +184,6 @@ router.put('/:messageId/upvotes', function(req, res, next) {
   let messageId = req.params.messageId;
   let userId = req.body.user;
   let value = req.body.value;
-  // console.log(messageId);
   Upvote.findOne({ message: messageId, user: userId })
     .exec()
     .then(result => {
@@ -234,6 +233,19 @@ router.put('/:messageId/upvotes', function(req, res, next) {
       res.status(400).json({ message: err.message })
     })
 
+});
+
+router.patch('/:messageId/upvotes/:userId', (req, res, next) => {
+  Upvote.updateOne({ message: req.params.messageId, user: req.params.userId },
+      req.body
+    )
+    .exec()
+    .then(result => {
+      res.send("ok");
+    })
+    .catch(err => {
+      res.status(400).json({ message: err.message })
+    })
 });
 
 module.exports = router;
