@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Message = require('../models/message');
 const Upvote = require('../models/upvote');
 const Group = require('../models/group');
-
+const User = require('../models/user')
 
 router.get('/:messageId', function(req, res, next) {
   let userId = req.query.userId;
@@ -183,55 +183,36 @@ router.put('/:messageId/answers', function(req, res, next) {
 router.put('/:messageId/upvotes', function(req, res, next) {
   let messageId = req.params.messageId;
   let userId = req.body.user;
-  console.log({ user: req.body.user, messageId: req.params.messageId })
   let value = req.body.value;
-  Upvote.findOne({ message: messageId, user: userId })
+
+  Message.findById(req.params.messageId)
     .exec()
     .then(result => {
-      if (result) {
-        if (value === 0) {
-          Upvote.deleteOne({ _id: result._id }).exec()
-          res.status(200).send("ok")
-          return;
-        } else {
-          Upvote.updateOne({ _id: result._id }, { value: value }).exec()
-          res.status(200).send("ok")
-          return;
-        }
-      } else {
-        Message.findById(req.params.messageId)
-          .exec()
-          .then(result => {
-            if (!result) {
-              throw { message: "Unknown messageId" }
-              return;
-            }
-            User.findById(userId)
-              .exec()
-              .then(res => {
-                if (!res) {
-                  console.log("neee2");
-                  throw { message: "Unknown userId" }
-                }
-                let upvote = new Upvote({
-                  _id: new mongoose.Types.ObjectId(),
-                  message: messageId,
-                  user: userId,
-                  value: value
-                })
-                res.status(200).send("ok")
-              }).catch(err => {
-                res.status(400).json({ message: err.message });
-              })
-          })
-          .catch(err => {
-            res.status(400).json({ message: err.message });
-          })
+      if (!result) {
+        throw { message: "Unknown messageId" }
+        return;
       }
+      User.findById(userId)
+        .exec()
+        .then(result => {
+          if (!result) {
+            throw { message: "Unknown userId" }
+          }
+          let upvote = new Upvote({
+            _id: new mongoose.Types.ObjectId(),
+            message: messageId,
+            user: userId,
+            value: value
+          });
+          upvote.save();
+          res.status(200).send("ok")
+        }).catch(err => {
+          res.status(400).json({ message: err.message });
+        })
     })
     .catch(err => {
-      res.status(400).json({ message: err.message })
-    })
+      res.status(400).json({ message: err.message });
+    });
 
 });
 

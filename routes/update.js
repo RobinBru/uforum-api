@@ -79,11 +79,14 @@ router.patch('/message/:messageId', function(req, res, next) {
 });
 
 router.patch('/message/:messageId/upvotes', (req, res, next) => {
-  Upvote.updateOne({ message: req.params.messageId, user: req.body.userId },
+  Upvote.findOneAndUpdate({ message: req.params.messageId, user: req.body.userId },
       req.body
     )
     .exec()
     .then(result => {
+      if (!result) {
+        throw { message: "unknown upvote" };
+      }
       res.send("ok");
     })
     .catch(err => {
@@ -92,9 +95,12 @@ router.patch('/message/:messageId/upvotes', (req, res, next) => {
 });
 
 router.delete('/message/:messageId/upvotes', function(req, res, next) {
-  Upvote.delete({ user: req.body.userId, message: req.params.messageId })
+  Upvote.findOneAndDelete({ user: req.body.userId, message: req.params.messageId })
     .exec()
     .then(result => {
+      if (!result) {
+        throw { message: "unknown upvote" };
+      }
       res.send("ok");
     })
     .catch(err => {
