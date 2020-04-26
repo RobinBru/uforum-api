@@ -98,7 +98,7 @@ router.get('/:groupId/tags', (req, res, next) => {
             for (let i = 0; i < tags.length; i++) {
                 counts[tags[i]] = 1 + (counts[tags[i]] || 0);
             }
-            let tagList = counts.keys().map(key => {
+            let tagList = Object.keys(counts).map(key => {
                 return {text: key, nrOfUsages: counts[key]}
                 }
             )
