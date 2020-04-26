@@ -183,11 +183,11 @@ router.put('/:messageId/answers', function(req, res, next) {
 router.put('/:messageId/upvotes', function(req, res, next) {
   let messageId = req.params.messageId;
   let userId = req.body.user;
+  console.log({ user: req.body.user, messageId: req.params.messageId })
   let value = req.body.value;
   Upvote.findOne({ message: messageId, user: userId })
     .exec()
     .then(result => {
-      console.log(result);
       if (result) {
         if (value === 0) {
           Upvote.deleteOne({ _id: result._id }).exec()
