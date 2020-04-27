@@ -242,7 +242,8 @@ router.put('/:groupId/questions', function(req, res, next) {
       })
     })
     .catch(err => {
-      res.status(400).json({ message: err.message })
+      res.status(400).json({ message: err.message });
+      console.log(err);
     });
 });
 
