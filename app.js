@@ -28,6 +28,34 @@ conn.on('connected', () => {
   console.log('MongoDB connected')
 });
 
+
+logger.token('realclfdate', function (req, res) {
+    var clfmonth = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+];
+ var pad2 = function(num) {
+  var str = String(num);
+
+  return (str.length === 1 ? '0' : '')
+    + str;
+};
+  var dateTime = new Date();
+  var date = dateTime.getDate();
+  var hour = dateTime.getHours();
+  var mins = dateTime.getMinutes();
+  var secs = dateTime.getSeconds();
+  var year = dateTime.getFullYear();
+  var timezoneofset = dateTime.getTimezoneOffset();
+  var sign = timezoneofset > 0 ? '-' : '+';
+  timezoneofset = parseInt(Math.abs(timezoneofset)/60);
+  var month = clfmonth[dateTime.getUTCMonth()];
+
+  return pad2(date) + '/' + month + '/' + year
+    + ':' + pad2(hour) + ':' + pad2(mins) + ':' + pad2(secs)
+    + ' '+sign+pad2(timezoneofset)+'00';
+});
+
 logger.format('custom', function developmentFormatLine(tokens, req, res) {
   // get the status code if response written
   var status = headersSent(res) ?
@@ -50,7 +78,7 @@ logger.format('custom', function developmentFormatLine(tokens, req, res) {
 
   if (!fn) {
     // compile
-    fn = developmentFormatLine[color] = compile('[:date[web]] \x1b[0m:method :url \x1b[' +
+    fn = developmentFormatLine[color] = compile('[:realclfdate] \x1b[0m:method :url \x1b[' +
       color + 'm:status\x1b[0m :response-time ms - :res[content-length]\x1b[0m')
   }
 
