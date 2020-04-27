@@ -79,7 +79,7 @@ router.patch('/message/:messageId', function(req, res, next) {
 });
 
 router.patch('/message/:messageId/upvotes', (req, res, next) => {
-  Upvote.findOneAndUpdate({ message: req.params.messageId, user: req.body.userId },
+  Upvote.findOneAndUpdate({ message: req.params.messageId, user: req.body.user },
       req.body
     )
     .exec()
