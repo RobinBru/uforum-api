@@ -83,7 +83,7 @@ router.patch('/message/:messageId/upvotes', (req, res, next) => {
   const messageId = req.params.messageId;
   const userId = req.body.userId;
   const value = req.body.value;
-  Upvote.findOne({ message: req.params.messageId, user: req.body.user })
+  Upvote.findOne({ message: messageId, user: userId })
     .exec()
     .then(result => {
       if (!result) {
