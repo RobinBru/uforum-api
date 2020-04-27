@@ -11,32 +11,31 @@ var messagesRouter = require('./routes/messages');
 var updateRouter = require('./routes/update');
 
 mongoose.connect("mongodb+srv://" +
-    process.env.mongodbUN + ":" +
-    process.env.mongodbPW +
-    "@webdevd0-fov8v.mongodb.net/uforum?retryWrites=true&w=majority",
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true
-    }
+  process.env.mongodbUN + ":" +
+  process.env.mongodbPW +
+  "@webdevd0-fov8v.mongodb.net/uforum?retryWrites=true&w=majority", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+  }
 );
 
 mongoose.Promise = global.Promise;
 
 var conn = mongoose.connection;
 
-conn.on('connected',()=>{
-    console.log('MongoDB connected')
+conn.on('connected', () => {
+  console.log('MongoDB connected')
 });
 
-conn.on('error',(err)=>{
-    if(err)
-        console.log(err)
+conn.on('error', (err) => {
+  if (err)
+    console.log(err)
 });
 
 var app = express();
 
-app.use(logger('dev'));
+app.use(logger(':date[web] :method :url :status :res[content-length] - :response-time ms'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
