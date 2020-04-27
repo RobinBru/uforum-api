@@ -28,6 +28,63 @@ conn.on('connected', () => {
   console.log('MongoDB connected')
 });
 
+logger.format('custom', function developmentFormatLine(tokens, req, res) {
+  // get the status code if response written
+  var status = headersSent(res) ?
+    res.statusCode :
+    undefined
+
+  // get status color
+  var color = status >= 500 ? 31 // red
+    :
+    status >= 400 ? 33 // yellow
+    :
+    status >= 300 ? 36 // cyan
+    :
+    status >= 200 ? 32 // green
+    :
+    0 // no color
+
+  // get colored function
+  var fn = developmentFormatLine[color]
+
+  if (!fn) {
+    // compile
+    fn = developmentFormatLine[color] = compile('[:date[clf]] \x1b[0m:method :url \x1b[' +
+      color + 'm:status\x1b[0m :response-time ms - :res[content-length]\x1b[0m')
+  }
+
+  return fn(tokens, req, res)
+})
+
+function headersSent(res) {
+  // istanbul ignore next: node.js 0.8 support
+  return typeof res.headersSent !== 'boolean' ?
+    Boolean(res._header) :
+    res.headersSent
+}
+
+function compile(format) {
+  if (typeof format !== 'string') {
+    throw new TypeError('argument format must be a string')
+  }
+
+  var fmt = String(JSON.stringify(format))
+  var js = '  "use strict"\n  return ' + fmt.replace(/:([-\w]{2,})(?:\[([^\]]+)\])?/g, function(_, name, arg) {
+    var tokenArguments = 'req, res'
+    var tokenFunction = 'tokens[' + String(JSON.stringify(name)) + ']'
+
+    if (arg !== undefined) {
+      tokenArguments += ', ' + String(JSON.stringify(arg))
+    }
+
+    return '" +\n    (' + tokenFunction + '(' + tokenArguments + ') || "-") + "'
+  })
+
+  // eslint-disable-next-line no-new-func
+  return new Function('tokens, req, res', js)
+}
+
 conn.on('error', (err) => {
   if (err)
     console.log(err)
@@ -35,7 +92,7 @@ conn.on('error', (err) => {
 
 var app = express();
 
-app.use(logger(':date[web] :method :url :status :res[content-length] - :response-time ms'));
+app.use(logger('custom'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -46,5 +103,6 @@ app.use('/', updateRouter);
 app.use('/user', usersRouter);
 app.use('/groups', groupsRouter);
 app.use('/message', messagesRouter);
+
 
 module.exports = app;
