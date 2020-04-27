@@ -78,8 +78,8 @@ logger.format('custom', function developmentFormatLine(tokens, req, res) {
 
   if (!fn) {
     // compile
-    fn = developmentFormatLine[color] = compile('[:dateformat] \x1b[0m:method :url \x1b[' +
-      color + 'm[:status\]\x1b[0m :response-time ms - :res[content-length]\x1b[0m')
+    fn = developmentFormatLine[color] = compile('[:dateformat] \x1b[' +
+      color + 'm[:status\]\x1b[0m :method :url :response-time ms - :res[content-length]\x1b[0m')
   }
 
   return fn(tokens, req, res)
