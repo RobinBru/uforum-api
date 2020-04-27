@@ -78,34 +78,66 @@ router.patch('/message/:messageId', function(req, res, next) {
     })
 });
 
+
 router.patch('/message/:messageId/upvotes', (req, res, next) => {
-  Upvote.findOneAndUpdate({ message: req.params.messageId, user: req.body.user },
-      req.body
-    )
+  const messageId = req.params.messageId;
+  const userId = req.body.userId;
+  const value = req.body.value;
+  Upvote.findOne({ message: req.params.messageId, user: req.body.user })
     .exec()
     .then(result => {
       if (!result) {
-        throw { message: "unknown upvote" };
+        return addUpvote(messageId, userId, value, res);
+      } else {
+        return updateUpvote(messageId, userId, result.value + value, res);
       }
-      res.send("ok");
-    })
-    .catch(err => {
-      res.status(400).json({ message: err.message })
-    })
+    }).catch(err => {
+      res.status(500).json({ message: err.message });
+    });
+
 });
 
-router.delete('/message/:messageId/upvotes/:userId/', function(req, res, next) {
-  Upvote.findOneAndDelete({ user: req.params.userId, message: req.params.messageId })
+
+function updateUpvote(messageId, userId, value, res) {
+  Upvote.findOneAndUpdate({ message: req.params.messageId, user: req.body.user },
+      req.body
+    ).exec()
+    .then(result => {
+      if (result) {
+        res.status(200).send("ok");
+      }
+    });
+}
+
+function addUpvote(messageId, userId, value, res) {
+  Message.findById(req.params.messageId)
     .exec()
     .then(result => {
       if (!result) {
-        throw { message: "unknown upvote" };
+        throw { message: "Unknown messageId" }
+        return;
       }
-      res.send("ok");
+      User.findById(userId)
+        .exec()
+        .then(result => {
+          if (!result) {
+            throw { message: "Unknown userId" }
+          }
+          let upvote = new Upvote({
+            _id: new mongoose.Types.ObjectId(),
+            message: messageId,
+            user: userId,
+            value: value
+          });
+          upvote.save();
+          res.status(200).send("ok")
+        }).catch(err => {
+          res.status(400).json({ message: err.message });
+        })
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
-    })
-});
+    });
+}
 
 module.exports = router;
