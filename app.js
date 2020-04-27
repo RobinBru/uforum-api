@@ -29,7 +29,7 @@ conn.on('connected', () => {
 });
 
 
-logger.token('realclfdate', function (req, res) {
+logger.token('dateformat', function (req, res) {
     var clfmonth = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -78,7 +78,7 @@ logger.format('custom', function developmentFormatLine(tokens, req, res) {
 
   if (!fn) {
     // compile
-    fn = developmentFormatLine[color] = compile('[:realclfdate] \x1b[0m:method :url \x1b[' +
+    fn = developmentFormatLine[color] = compile('[:dateformat] \x1b[0m:method :url \x1b[' +
       color + 'm[:status\]\x1b[0m :response-time ms - :res[content-length]\x1b[0m')
   }
 
