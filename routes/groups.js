@@ -196,10 +196,13 @@ router.get('/:groupId/questions', function(req, res, next) {
     .exec()
     .then(result => {
       pagesLeft = result.length > pageLength;
-      result = result.slice(0, pageLength);
-      return Promise.all(result.map(mess => { return formatQuestion(mess, userId) }));
+      result = result.slice(0, pageLength).map(mess => formatQuestion(mess, userId))
+      return Promise.all(result);
     })
     .then(result => {
+      if (req.query.sort === "upvotes") {
+        result = result.sort((a, b) => b.upvotes - a.upvotes);
+      }
       res.status(200).json({
         page: page,
         count: result.length,

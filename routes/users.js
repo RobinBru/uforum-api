@@ -108,18 +108,16 @@ router.put('/:userId/groups', function(req, res, next) {
 });
 
 /*Leave a group*/
-router.delete('/:userId/groups/:groupId', function (req, res, next) {
-    User.updateOne(
-        {_id: req.params.userId},
-        {$pull: {groups: req.params.groupId}})
-        .then(result => {
-            return Group.updateOne({_id: req.params.groupId}, {$pull: {admins: req.params.userId}})
-        })
-        .then(result => {
-            res.status(200).send("ok")
-        })
-        .catch(err => {
-            res.status(400).send("fail")
-        })
+router.delete('/:userId/groups/:groupId', function(req, res, next) {
+  User.updateOne({ _id: req.params.userId }, { $pull: { groups: req.params.groupId } })
+    .then(result => {
+      return Group.updateOne({ _id: req.params.groupId }, { $pull: { admins: req.params.userId } })
+    })
+    .then(result => {
+      res.status(200).send("ok")
+    })
+    .catch(err => {
+      res.status(400).send("fail")
+    })
 });
 module.exports = router;
