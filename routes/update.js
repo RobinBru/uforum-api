@@ -16,6 +16,7 @@ router.delete('/user/:userId', function(req, res, next) {
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
+    console.log(err);
     })
 });
 
@@ -34,6 +35,7 @@ router.delete('/group/:groupId', function(req, res, next) {
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
+    console.log(err);
     })
 });
 
@@ -45,6 +47,7 @@ router.delete('/message/:messageId', function(req, res, next) {
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
+    console.log(err);
     })
 });
 
@@ -57,7 +60,8 @@ router.patch('/user/:userId', function(req, res, next) {
       res.send("ok");
     })
     .catch(err => {
-      res.status(400).json({ message: err.message })
+      res.status(400).json({ message: err.message });
+    console.log(err);
     })
 });
 
@@ -70,7 +74,8 @@ router.patch('/group/:groupId', function(req, res, next) {
       res.send("ok");
     })
     .catch(err => {
-      res.status(400).json({ message: err.message })
+      res.status(400).json({ message: err.message });
+    console.log(err);
     })
 });
 
@@ -83,7 +88,8 @@ router.patch('/message/:messageId', function(req, res, next) {
       res.send("ok");
     })
     .catch(err => {
-      res.status(400).json({ message: err.message })
+      res.status(400).json({ message: err.message });
+    console.log(err);
     })
 });
 
@@ -102,6 +108,7 @@ router.patch('/message/:messageId/upvotes', (req, res, next) => {
       }
     }).catch(err => {
       res.status(500).json({ message: err.message });
+    console.log(err);
     });
 
 });
@@ -141,10 +148,12 @@ function addUpvote(messageId, userId, value, res) {
           res.status(200).send("ok")
         }).catch(err => {
           res.status(400).json({ message: err.message });
+        console.log(err);
         })
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
+    console.log(err);
     });
 }
 
