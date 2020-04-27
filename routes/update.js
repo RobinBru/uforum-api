@@ -94,8 +94,8 @@ router.patch('/message/:messageId/upvotes', (req, res, next) => {
     })
 });
 
-router.delete('/message/:messageId/upvotes', function(req, res, next) {
-  Upvote.findOneAndDelete({ user: req.body.userId, message: req.params.messageId })
+router.delete('/message/:messageId/upvotes/:userId/', function(req, res, next) {
+  Upvote.findOneAndDelete({ user: req.params.userId, message: req.params.messageId })
     .exec()
     .then(result => {
       if (!result) {
