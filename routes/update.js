@@ -4,7 +4,9 @@ const router = express.Router();
 const User = require('../models/user');
 const Group = require('../models/group');
 const Message = require('../models/message');
-const Upvote = require('../models/upvote')
+const Upvote = require('../models/upvote');
+const mongoose = require('mongoose');
+
 
 router.delete('/user/:userId', function(req, res, next) {
   User.delete({ _id: req.params.userId })
@@ -99,7 +101,8 @@ router.patch('/message/:messageId/upvotes', (req, res, next) => {
 
 
 function updateUpvote(messageId, userId, value, res) {
-  Upvote.findOneAndUpdate({ message: messageId, user: userId }, { user: userId, value: value }).exec()
+  Upvote.findOneAndUpdate({ message: messageId, user: userId }, { user: userId, value: value })
+    .exec()
     .then(result => {
       if (result) {
         res.status(200).send("ok");
