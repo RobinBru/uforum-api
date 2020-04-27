@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 
 
 router.delete('/user/:userId', function(req, res, next) {
-  User.delete({ _id: req.params.userId })
+  User.deleteOne({ _id: req.params.userId })
     .exec()
     .then(result => {
       res.send("ok");
@@ -20,8 +20,15 @@ router.delete('/user/:userId', function(req, res, next) {
 });
 
 router.delete('/group/:groupId', function(req, res, next) {
-  Group.delete({ _id: req.params.groupId })
+  Group.deleteOne({ _id: req.params.groupId })
     .exec()
+    .then(result => {
+        return User.updateMany({groups: req.params.groupId},
+            {
+                $pull: {groups: req.params.groupId}
+            })
+            .exec()
+    })
     .then(result => {
       res.send("ok");
     })
@@ -31,7 +38,7 @@ router.delete('/group/:groupId', function(req, res, next) {
 });
 
 router.delete('/message/:messageId', function(req, res, next) {
-  Message.delete({ _id: req.params.messageId })
+  Message.deleteOne({ _id: req.params.messageId })
     .exec()
     .then(result => {
       res.send("ok");
