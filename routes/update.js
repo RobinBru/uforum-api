@@ -99,9 +99,7 @@ router.patch('/message/:messageId/upvotes', (req, res, next) => {
 
 
 function updateUpvote(messageId, userId, value, res) {
-  Upvote.findOneAndUpdate({ message: req.params.messageId, user: req.body.user },
-      req.body
-    ).exec()
+  Upvote.findOneAndUpdate({ message: messageId, user: userId }, { user: userId, value: value }).exec()
     .then(result => {
       if (result) {
         res.status(200).send("ok");
@@ -110,7 +108,7 @@ function updateUpvote(messageId, userId, value, res) {
 }
 
 function addUpvote(messageId, userId, value, res) {
-  Message.findById(req.params.messageId)
+  Message.findById(messageId)
     .exec()
     .then(result => {
       if (!result) {
