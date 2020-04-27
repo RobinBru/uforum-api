@@ -63,7 +63,8 @@ router.get('/:messageId', function(req, res, next) {
       })
     })
     .catch(err => {
-      res.status(400).json({ message: err.message })
+      res.status(400).json({ message: err.message });
+    console.log(err);
     });
 
 });
@@ -138,7 +139,8 @@ router.get('/:messageId/answers', function(req, res, next) {
       });
     })
     .catch(err => {
-      res.status(400).json({ message: err.message })
+      res.status(400).json({ message: err.message });
+    console.log(err);
     });
 });
 
@@ -176,7 +178,8 @@ router.put('/:messageId/answers', function(req, res, next) {
       })
     })
     .catch(err => {
-      res.status(400).json({ message: err.message })
+      res.status(400).json({ message: err.message });
+    console.log(err);
     });
 });
 
