@@ -50,7 +50,7 @@ logger.format('custom', function developmentFormatLine(tokens, req, res) {
 
   if (!fn) {
     // compile
-    fn = developmentFormatLine[color] = compile('[:date[clf]] \x1b[0m:method :url \x1b[' +
+    fn = developmentFormatLine[color] = compile('[:date[web]] \x1b[0m:method :url \x1b[' +
       color + 'm:status\x1b[0m :response-time ms - :res[content-length]\x1b[0m')
   }
 
