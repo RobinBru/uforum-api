@@ -22,7 +22,8 @@ router.get('/:userId', function(req, res, next) {
       }
     })
     .catch((err) => {
-      res.status(400).json({ message: "Something went wrong" })
+      res.status(400).json({ message: "Something went wrong" });
+    console.log(err);
     });
 });
 
@@ -67,13 +68,15 @@ router.get('/:userId/groups', function(req, res, next) {
           })
           .catch((err) => {
             res.status(400).json({ message: "Something went wrong" });
+          console.log(err);
           });
       } else {
         res.status(404).json({ message: "Unknown userId" })
       }
     })
     .catch((err) => {
-      res.status(400).json({ message: "Something went wrong" })
+      res.status(400).json({ message: "Something went wrong" });
+    console.log(err);
     });
 });
 
@@ -104,6 +107,7 @@ router.put('/:userId/groups', function(req, res, next) {
     })
     .catch((err) => {
       res.status(404).json(err);
+    console.log(err);
     });
 });
 
@@ -117,7 +121,8 @@ router.delete('/:userId/groups/:groupId', function(req, res, next) {
       res.status(200).send("ok")
     })
     .catch(err => {
-      res.status(400).send("fail")
+      res.status(400).send("fail");
+    console.log(err);
     })
 });
 module.exports = router;
