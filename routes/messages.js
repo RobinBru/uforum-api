@@ -151,6 +151,7 @@ router.get('/:messageId/comments', (req, res, next) => {
     return res.status(400).json({ message: "Unknown userId" })
   }
   let filter = { nestedIn: req.params.messageId, type: "Comment" };
+  let start = (page - 1) * pageLength;
   Message.find(filter)
     .skip(start)
     .limit(pageLength + 1)
