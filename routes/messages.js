@@ -64,7 +64,7 @@ router.get('/:messageId', function(req, res, next) {
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
-    console.log(err);
+      console.log(err);
     });
 
 });
@@ -97,6 +97,7 @@ function formatAnswer(answer, userId) {
       return answer;
     })
 }
+
 
 router.get('/:messageId/answers', function(req, res, next) {
   let userId = req.query.userId;
@@ -140,7 +141,38 @@ router.get('/:messageId/answers', function(req, res, next) {
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
-    console.log(err);
+      console.log(err);
+    });
+});
+
+router.get('/:messageId/comments', (req, res, next) => {
+  let userId = req.query.userId;
+  if (!userId) {
+    return res.status(400).json({ message: "Unknown userId" })
+  }
+  let filter = { nestedIn: req.params.messageId, type: "Comment" };
+  Message.find(filter)
+    .skip(start)
+    .limit(pageLength + 1)
+    .exec()
+    .then(result => {
+      pagesLeft = result.length > pageLength;
+      result = result.slice(0, pageLength);
+      return Promise.all(result.map(comment => formatAnswer(comment, userId)))
+    })
+    .then(result => {
+      res.status(200).json({
+        page: page,
+        count: result.length,
+        startIndex: start,
+        endIndex: start + result.length,
+        pagesLeft: pagesLeft,
+        answers: result
+      })
+    })
+    .catch(err => {
+      res.status(400).json({ message: err.message });
+      console.log(err);
     });
 });
 
@@ -151,7 +183,7 @@ router.put('/:messageId/answers', function(req, res, next) {
       if (!result) {
         throw { message: "Unknown messageId" }
       }
-      message = result;
+      const message = result;
       let messageObj = new Message({
         _id: new mongoose.Types.ObjectId(),
         title: req.body.title,
@@ -163,7 +195,7 @@ router.put('/:messageId/answers', function(req, res, next) {
         postedOn: Date.now(),
         tags: req.body.tags
       });
-      return messageObj.save()
+      return messageObj.save();
     })
     .then(result => {
       res.status(200).json({
@@ -179,9 +211,47 @@ router.put('/:messageId/answers', function(req, res, next) {
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
-    console.log(err);
+      console.log(err);
     });
 });
 
+router.put('/:messageId/comments', (req, res, next) => {
+  Message.findById(req.params.messageId)
+    .exec()
+    .then(result => {
+      if (!result) {
+        throw { message: "Unknown messageId" }
+      }
+      const message = result;
+      let messageObj = new Message({
+        _id: new mongoose.Types.ObjectId(),
+        title: req.body.title,
+        content: req.body.text,
+        type: "Comment",
+        author: req.body.author,
+        group: result.group,
+        nestedIn: result._id,
+        postedOn: Date.now(),
+        tags: req.body.tags
+      });
+      return messageObj.save();
+    })
+    .then(result => {
+      res.status(200).json({
+        id: result._id,
+        title: result.title,
+        text: result.content,
+        group: result.group,
+        type: result.type.toLowerCase(),
+        nestedIn: result.nestedIn,
+        author: result.author,
+        tags: result.tags
+      })
+    })
+    .catch(err => {
+      res.status(400).json({ message: err.message });
+      console.log(err);
+    });
+});
 
 module.exports = router;
