@@ -44,7 +44,8 @@ router.get('/', function(req, res, next) {
             moderators: groep.admins.map(user => {
               return {
                 name: user.name,
-                email: user.email_address
+                email: user.email_address,
+                id: user._id
               }
             })
           }
@@ -59,50 +60,47 @@ router.get('/', function(req, res, next) {
 
 router.put('/', function(req, res, next) {
   let creator = req.body.creator;
-  if (!creator){
+  if (!creator) {
     return res.status(400).send("Creator necessary")
   }
   let moderators = req.body.moderators;
   let moderatorIds;
   let modReturnable = [];
-  User.find({ $or: [{_id: creator}, { email_address: { $in: moderators }}] })
-      .select('_id name email_address')
-      .exec()
-      .then(result => {
-        modReturnable = result.map(mod => {
-          return {name: mod.name, email: mod.email_address}
-        });
-        moderatorIds = result.map(mod => mod._id);
-        let group = new Group({
-          _id: new mongoose.Types.ObjectId(),
-          name: req.body.name,
-          description: req.body.text,
-          public: req.body.public,
-          admins: moderatorIds
-        });
-        return group.save()
-      })
-      .then(result => {
-        res.status(200)
-            .json({
-              id: result._id,
-              name: result.name,
-              text: result.description,
-              public: result.public,
-              moderators: modReturnable
-            });
-        return User.updateMany(
-            {_id: {$in: moderatorIds}},
-            { $addToSet: { groups: result._id } }
-        )
-      })
-      .then(
-          //Yay
-      )
-      .catch(err => {
-        console.log(err);
-        res.status(400).json({ message: err.message })
+  User.find({ $or: [{ _id: creator }, { email_address: { $in: moderators } }] })
+    .select('_id name email_address')
+    .exec()
+    .then(result => {
+      modReturnable = result.map(mod => {
+        return { name: mod.name, email: mod.email_address }
       });
+      moderatorIds = result.map(mod => mod._id);
+      let group = new Group({
+        _id: new mongoose.Types.ObjectId(),
+        name: req.body.name,
+        description: req.body.text,
+        public: req.body.public,
+        admins: moderatorIds
+      });
+      return group.save()
+    })
+    .then(result => {
+      res.status(200)
+        .json({
+          id: result._id,
+          name: result.name,
+          text: result.description,
+          public: result.public,
+          moderators: modReturnable
+        });
+      return User.updateMany({ _id: { $in: moderatorIds } }, { $addToSet: { groups: result._id } })
+    })
+    .then(
+      //Yay
+    )
+    .catch(err => {
+      console.log(err);
+      res.status(400).json({ message: err.message })
+    });
 });
 
 function formatQuestion(question, userId) {
@@ -160,7 +158,7 @@ router.get('/:groupId/tags', (req, response, next) => {
         counts[tags[i]] = 1 + (counts[tags[i]] || 0);
       }
       const result = Object.keys(counts).map(tag => {
-        return { text : tag, nrOfUsages : counts[tag]}
+        return { text: tag, nrOfUsages: counts[tag] }
       });
       response.status(200).json({
         tags: result
@@ -229,7 +227,7 @@ router.get('/:groupId/questions', function(req, res, next) {
     })
     .catch(err => {
       res.status(400).json({ message: err.message });
-    console.log(err);
+      console.log(err);
     });
 });
 
