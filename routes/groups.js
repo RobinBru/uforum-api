@@ -150,7 +150,7 @@ function formatQuestion(question, userId) {
     })
 }
 
-router.get('/:groupId/tags', (req, res, next) => {
+router.get('/:groupId/tags', (req, response, next) => {
   Message.find({ group: req.params.groupId, type: "Question" })
     .exec()
     .then(res => {
@@ -162,12 +162,12 @@ router.get('/:groupId/tags', (req, res, next) => {
       const result = Object.keys(counts).map(tag => {
         return { text : tag, nrOfUsages : counts[tag]}
       });
-      res.status(200).json({
+      response.status(200).json({
         tags: result
       });
     })
     .catch(err => {
-      res.status(400).json({ message: err.message });
+      response.status(400).json({ message: err.message });
       console.log(err);
     });
 });
