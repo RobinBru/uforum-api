@@ -150,21 +150,24 @@ function formatQuestion(question, userId) {
     })
 }
 
-router.get('/:groupId/tags', (req, res, next) => {
+router.get('/:groupId/tags', (req, response, next) => {
   Message.find({ group: req.params.groupId, type: "Question" })
     .exec()
     .then(res => {
-      let tags = res.map(question => question.tags).flatMap();
+      let tags = res.map(question => question.tags).flatMap(res => res);
       let counts = {};
       for (let i = 0; i < tags.length; i++) {
         counts[tags[i]] = 1 + (counts[tags[i]] || 0);
       }
-      res.status(200).json({
-        tags: tags
+      const result = Object.keys(counts).map(tag => {
+        return { text : tag, nrOfUsages : counts[tag]}
+      });
+      response.status(200).json({
+        tags: result
       });
     })
     .catch(err => {
-      res.status(400).json({ message: err.message });
+      response.status(400).json({ message: err.message });
       console.log(err);
     });
 });
