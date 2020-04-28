@@ -154,13 +154,19 @@ router.get('/:groupId/tags', (req, res, next) => {
   Message.find({ group: req.params.groupId, type: "Question" })
     .exec()
     .then(res => {
-      let tags = res.map(question => question.tags).flatMap();
+      let tags = res.map(question => question.tags).flatMap(res => res);
       let counts = {};
       for (let i = 0; i < tags.length; i++) {
         counts[tags[i]] = 1 + (counts[tags[i]] || 0);
       }
+      result = Object.keys(counts).map(tag =>
+        {
+         text = tag,
+         nrOfUsages = counts[tag]
+        }  
+      )
       res.status(200).json({
-        tags: tags
+        tags: result
       });
     })
     .catch(err => {
