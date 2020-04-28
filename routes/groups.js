@@ -58,41 +58,51 @@ router.get('/', function(req, res, next) {
 });
 
 router.put('/', function(req, res, next) {
+  let creator = req.body.creator;
+  if (!creator){
+    return res.status(400).send("Creator necessary")
+  }
   let moderators = req.body.moderators;
+  let moderatorIds;
   let modReturnable = [];
-  User.find({ email_address: { $in: moderators } })
-    .select('_id name email_address')
-    .exec()
-    .then(result => {
-      console.log(result);
-      if (!result) {
-        throw { message: "Unknown email" }
-      } else {
-        modReturnable = result.map(mod => { return { name: mod.name, email: mod.email_address } });
+  User.find({ $or: [{_id: creator}, { email_address: { $in: moderators }}] })
+      .select('_id name email_address')
+      .exec()
+      .then(result => {
+        modReturnable = result.map(mod => {
+          return {name: mod.name, email: mod.email_address}
+        });
+        moderatorIds = result.map(mod => mod._id);
         let group = new Group({
           _id: new mongoose.Types.ObjectId(),
           name: req.body.name,
           description: req.body.text,
           public: req.body.public,
-          admins: result.map(mod => mod._id)
+          admins: moderatorIds
         });
         return group.save()
-      }
-    })
-    .then(result => {
-      res.status(200)
-        .json({
-          id: result._id,
-          name: result.name,
-          text: result.description,
-          public: result.public,
-          moderators: modReturnable
-        })
-    })
-    .catch(err => {
-      res.status(400).json({ message: err.message });
-      console.log(err);
-    });
+      })
+      .then(result => {
+        res.status(200)
+            .json({
+              id: result._id,
+              name: result.name,
+              text: result.description,
+              public: result.public,
+              moderators: modReturnable
+            });
+        return User.updateMany(
+            {_id: {$in: moderatorIds}},
+            { $addToSet: { groups: result._id } }
+        )
+      })
+      .then(
+          //Yay
+      )
+      .catch(err => {
+        console.log(err);
+        res.status(400).json({ message: err.message })
+      });
 });
 
 function formatQuestion(question, userId) {
