@@ -10,6 +10,7 @@ var groupsRouter = require('./routes/groups');
 var messagesRouter = require('./routes/messages');
 var updateRouter = require('./routes/update');
 
+//Connect to mongoDB
 mongoose.connect("mongodb+srv://" +
   process.env.mongodbUN + ":" +
   process.env.mongodbPW +
