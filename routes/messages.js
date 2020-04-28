@@ -90,7 +90,8 @@ function formatAnswer(answer, userId) {
         isAuthor: answer.author == userId,
         upvotes: voteValue,
         hasUpvoted: hasUpvoted,
-        tags: answer.tags
+        tags: answer.tags,
+        comments: []
       }
     })
     .catch(err => {
