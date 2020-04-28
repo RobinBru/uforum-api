@@ -45,7 +45,7 @@ router.get('/', function(req, res, next) {
               return {
                 name: user.name,
                 email: user.email_address,
-                id: "dit is een id"
+                id: user._id
               }
             })
           }
