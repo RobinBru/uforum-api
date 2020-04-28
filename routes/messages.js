@@ -226,7 +226,7 @@ router.put('/:messageId/comments', (req, res, next) => {
       const message = result;
       let messageObj = new Message({
         _id: new mongoose.Types.ObjectId(),
-        title: req.body.title,
+        title: "comment",
         content: req.body.text,
         type: "Comment",
         author: req.body.author,
