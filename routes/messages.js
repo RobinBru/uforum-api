@@ -91,10 +91,23 @@ function formatAnswer(answer, userId) {
         upvotes: voteValue,
         hasUpvoted: hasUpvoted,
         tags: answer.tags,
-        comments: []
       }
     })
-    .catch(err => {
+    .then(result => {
+      return Message.find({ nestedIn: answer._id })
+        .select('content')
+        .exec()
+        .then(comments => {
+          console.log(comments);
+          comments = comments.map(comment => comment.content);
+          result.comments = comments;
+          return result;
+        })
+        .catch(() => {
+          return result;
+        });
+    })
+    .catch(() => {
       return answer;
     })
 }
