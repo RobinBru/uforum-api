@@ -23,7 +23,7 @@ router.get('/:userId', function(req, res, next) {
     })
     .catch((err) => {
       res.status(400).json({ message: "Something went wrong" });
-    console.log(err);
+      console.log(err);
     });
 });
 
@@ -68,7 +68,7 @@ router.get('/:userId/groups', function(req, res, next) {
           })
           .catch((err) => {
             res.status(400).json({ message: "Something went wrong" });
-          console.log(err);
+            console.log(err);
           });
       } else {
         res.status(404).json({ message: "Unknown userId" })
@@ -76,7 +76,7 @@ router.get('/:userId/groups', function(req, res, next) {
     })
     .catch((err) => {
       res.status(400).json({ message: "Something went wrong" });
-    console.log(err);
+      console.log(err);
     });
 });
 
@@ -107,7 +107,7 @@ router.put('/:userId/groups', function(req, res, next) {
     })
     .catch((err) => {
       res.status(404).json(err);
-    console.log(err);
+      console.log(err);
     });
 });
 
@@ -122,7 +122,7 @@ router.delete('/:userId/groups/:groupId', function(req, res, next) {
     })
     .catch(err => {
       res.status(400).send("fail");
-    console.log(err);
+      console.log(err);
     })
 });
 module.exports = router;
@@ -130,14 +130,14 @@ module.exports = router;
 /*Pin a message*/
 router.put('/:userId/pins', (req, res, next) => {
   User.findById(req.params.userId)
-  .then((result) => {
-    User.updateOne({ _id: req.params.userId }, { pins: { [...result.pins, req.body.messageId] }})
-    .then(() => {
-      res.status(202).send("ok")
-    })
-    .catch(err => {
-      res.status(400).send("fail");
-      console.log(err);
+    .then((result) => {
+      User.updateOne({ _id: req.params.userId }, { pins: [...result.pins, req.body.messageId] })
+        .then(() => {
+          res.status(202).send("ok")
+        })
+        .catch(err => {
+          res.status(400).send("fail");
+          console.log(err);
+        });
     });
-  });
 });
