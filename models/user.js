@@ -9,7 +9,10 @@ const userScheme = new mongoose.Schema({
     email_address: { type: String, required: true, unique: true,
         match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
     },
-    psw: { type: String, required: true}
+    psw: { type: String, required: true},
+    pins: { type: [{ type: String }], default: [] }
+
+
 });
 
 userScheme.pre('save', function (next) {

@@ -126,3 +126,18 @@ router.delete('/:userId/groups/:groupId', function(req, res, next) {
     })
 });
 module.exports = router;
+
+/*Pin a message*/
+router.put('/:userId/pins', (req, res, next) => {
+  User.findById(req.params.userId)
+  .then((result) => {
+    User.updateOne({ _id: req.params.userId }, { pins: { [...result.pins, req.body.messageId] }})
+    .then(() => {
+      res.status(202).send("ok")
+    })
+    .catch(err => {
+      res.status(400).send("fail");
+      console.log(err);
+    });
+  });
+});
