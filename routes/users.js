@@ -127,6 +127,7 @@ router.delete('/:userId/groups/:groupId', function(req, res, next) {
 });
 module.exports = router;
 
+
 /*Pin a message*/
 router.put('/:userId/pins', (req, res, next) => {
   User.findById(req.params.userId)
