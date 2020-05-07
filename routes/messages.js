@@ -70,23 +70,17 @@ router.get('/:messageId', function(req, res, next) {
 });
 
 function formatAnswer(answer, userId) {
-  let hasUpvoted;
-  let voteValue;
-  let author;
   return Upvote.find({ message: answer._id })
     .select("user value")
     .exec()
     .then(result => {
-      hasUpvoted = result.find(val => val.user == userId);
+      let hasUpvoted = result.find(val => val.user == userId);
       if (hasUpvoted) {
         hasUpvoted = hasUpvoted.value;
       } else {
         hasUpvoted = 0;
       }
-      voteValue = result.map(up => up.value).reduce((a, b) => a + b, 0);
-      return User.findById(answer.author).exec();
-    })
-    .then(result => {
+      let voteValue = result.map(up => up.value).reduce((a, b) => a + b, 0);
       return {
         id: answer._id,
         title: answer.title,
@@ -97,8 +91,6 @@ function formatAnswer(answer, userId) {
         upvotes: voteValue,
         hasUpvoted: hasUpvoted,
         tags: answer.tags,
-        anonymous: answer.anonymous,
-        author: result.name
       }
     })
     .then(result => {
@@ -221,8 +213,7 @@ router.put('/:messageId/answers', function(req, res, next) {
         group: result.group,
         nestedIn: result._id,
         postedOn: Date.now(),
-        tags: req.body.tags,
-        anonymous: req.body.anonymous
+        tags: req.body.tags
       });
       return messageObj.save();
     })
@@ -235,8 +226,7 @@ router.put('/:messageId/answers', function(req, res, next) {
         type: result.type.toLowerCase(),
         nestedIn: result.nestedIn,
         author: result.author,
-        tags: result.tags,
-        anonymous: result.anonymous
+        tags: result.tags
       })
     })
     .catch(err => {
@@ -262,8 +252,7 @@ router.put('/:messageId/comments', (req, res, next) => {
         group: result.group,
         nestedIn: result._id,
         postedOn: Date.now(),
-        tags: req.body.tags,
-        anonymous: req.body.anonymous
+        tags: req.body.tags
       });
       return messageObj.save();
     })
@@ -276,8 +265,7 @@ router.put('/:messageId/comments', (req, res, next) => {
         type: result.type.toLowerCase(),
         nestedIn: result.nestedIn,
         author: result.author,
-        tags: result.tags,
-        anonymous: result.anonymous
+        tags: result.tags
       })
     })
     .catch(err => {

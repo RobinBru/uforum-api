@@ -106,7 +106,6 @@ function formatQuestion(question, userId) {
   let lastPosted;
   let hints;
   let answers;
-  let author;
   return Message.find({ nestedIn: question._id })
     .select('type postedOn')
     .sort({ postedOn: -1 })
@@ -119,11 +118,7 @@ function formatQuestion(question, userId) {
       }
       hints = result.filter(mes => mes.type === "Hint").length;
       answers = result.filter(mes => mes.type === "Answer").length;
-      return User.findById(question.author).exec();
-    })
-    .then(result => {
-      author = result.name;
-      return Upvote.find({ message: question._id }).exec();
+      return Upvote.find({ message: question._id }).exec()
     })
     .then(result => {
       let hasUpvoted = result.find(val => val.user == userId);
@@ -144,9 +139,7 @@ function formatQuestion(question, userId) {
         hasUpvoted: hasUpvoted,
         answers: answers,
         hints: hints,
-        tags: question.tags,
-        anonymous: question.anonymous,
-        author: author
+        tags: question.tags
       }
     })
     .catch(err => {
@@ -246,8 +239,7 @@ router.put('/:groupId/questions', function(req, res, next) {
     author: req.body.author,
     group: req.params.groupId,
     postedOn: Date.now(),
-    tags: req.body.tags,
-    anonymous: req.body.anonymous
+    tags: req.body.tags
   });
   questObj.save()
     .then(result => {
@@ -259,8 +251,7 @@ router.put('/:groupId/questions', function(req, res, next) {
         text: result.content,
         group: result.group,
         author: result.author,
-        tags: result.tags,
-        anonymous: result.anonymous
+        tags: result.tags
       })
     })
     .catch(err => {
