@@ -271,7 +271,7 @@ router.put('/:groupId/questions', function(req, res, next) {
   questObj.save()
   .then(result => {
       serverResult = result;
-      return User.findById(serverResult.author);
+      return User.findById(serverResult.author).exec();
     }
   )
   .then(result => {

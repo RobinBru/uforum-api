@@ -205,6 +205,7 @@ router.get('/:messageId/comments', (req, res, next) => {
 });
 
 router.put('/:messageId/answers', function(req, res, next) {
+  let returnValue;
   Message.findById(req.params.messageId)
     .exec()
     .then(result => {
@@ -227,16 +228,20 @@ router.put('/:messageId/answers', function(req, res, next) {
       return messageObj.save();
     })
     .then(result => {
+      returnValue = result;
+      return User.findById(result.author).exec();
+    })
+    .then(result => {
       res.status(200).json({
-        id: result._id,
-        title: result.title,
-        text: result.content,
-        group: result.group,
-        type: result.type.toLowerCase(),
-        nestedIn: result.nestedIn,
-        author: result.author,
-        tags: result.tags,
-        anonymous: result.anonymous
+        id: returnValue._id,
+        title: returnValue.title,
+        text: returnValue.content,
+        group: returnValue.group,
+        type: returnValue.type.toLowerCase(),
+        nestedIn: returnValue.nestedIn,
+        tags: returnValue.tags,
+        anonymous: returnValue.anonymous,
+        author: result.name,
       })
     })
     .catch(err => {
@@ -246,6 +251,7 @@ router.put('/:messageId/answers', function(req, res, next) {
 });
 
 router.put('/:messageId/comments', (req, res, next) => {
+  let returnValue;
   Message.findById(req.params.messageId)
     .exec()
     .then(result => {
@@ -268,16 +274,20 @@ router.put('/:messageId/comments', (req, res, next) => {
       return messageObj.save();
     })
     .then(result => {
+      returnValue = result;
+      return User.findById(result.author).exec;
+    })
+    .then(result => {
       res.status(200).json({
-        id: result._id,
-        title: result.title,
-        text: result.content,
-        group: result.group,
-        type: result.type.toLowerCase(),
-        nestedIn: result.nestedIn,
-        author: result.author,
-        tags: result.tags,
-        anonymous: result.anonymous
+        id: returnValue._id,
+        title: returnValue.title,
+        text: returnValue.content,
+        group: returnValue.group,
+        type: returnValue.type.toLowerCase(),
+        nestedIn: returnValue.nestedIn,
+        tags: returnValue.tags,
+        anonymous: returnValue.anonymous,
+        author: returnValue.author
       })
     })
     .catch(err => {
