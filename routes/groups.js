@@ -18,7 +18,14 @@ router.get('/', function(req, res, next) {
     page = 1
   }
   let start = (page - 1) * pageLength;
-  let regex = new RegExp(name.trim());
+  let valid = true;
+  let regex;
+  try {
+    regex = new RegExp(name.trim());
+  } catch (e) {
+    valid = false;
+    regex = new RegExp(".*");
+  }
 
   Group.find({ public: true, name: { $regex: regex, $options: "i" } })
     .sort({ name: 1 })
@@ -27,6 +34,9 @@ router.get('/', function(req, res, next) {
     .populate("admins", "_id name email_address")
     .exec()
     .then(result => {
+      if (!valid) {
+        result = [];
+      }
       let pagesLeft = result.length > pageLength;
       result = result.slice(0, pageLength);
       res.json({
@@ -190,8 +200,13 @@ router.get('/:groupId/questions', function(req, res, next) {
     page = 1
   }
   let findParameters = { group: req.params.groupId, type: "Question" }
+  let valid = true;
   if (searchQuery) {
-    findParameters.title = new RegExp(`.*${searchQuery}.*`, "i");
+    try {
+      findParameters.title = new RegExp(`.*${searchQuery}.*`, "i");
+    } catch (e) {
+      valid = false;
+    }
   }
   let start = (page - 1) * pageLength;
   let pagesLeft;
@@ -214,6 +229,9 @@ router.get('/:groupId/questions', function(req, res, next) {
     .limit(pageLength + 1)
     .exec()
     .then(result => {
+      if (!valid) {
+        return [];
+      }
       pagesLeft = result.length > pageLength;
       result = result.slice(0, pageLength).map(mess => formatQuestion(mess, userId))
       return Promise.all(result);
