@@ -256,6 +256,7 @@ router.get('/:groupId/questions', function(req, res, next) {
 });
 
 router.put('/:groupId/questions', function(req, res, next) {
+  let serverResult;
   let questObj = new Message({
     _id: new mongoose.Types.ObjectId(),
     title: req.body.title,
@@ -268,23 +269,26 @@ router.put('/:groupId/questions', function(req, res, next) {
     anonymous: req.body.anonymous
   });
   questObj.save()
-    .then(result => {
-
-
-      res.status(200).json({
-        id: result._id,
-        title: result.title,
-        text: result.content,
-        group: result.group,
-        author: result.author,
-        tags: result.tags,
-        anonymous: result.anonymous
-      })
+  .then(result => {
+      serverResult = result;
+      return User.findById(serverResult.author);
+    }
+  )
+  .then(result => {
+    res.status(200).json({
+      id: serverResult._id,
+      title: serverResult.title,
+      text: serverResult.content,
+      group: serverResult.group,
+      author: result.name,
+      tags: serverResult.tags,
+      anonymous: serverResult.anonymous
     })
-    .catch(err => {
-      res.status(400).json({ message: err.message });
-      console.log(err);
-    });
+  })
+  .catch(err => {
+    res.status(400).json({ message: err.message });
+    console.log(err);
+  });
 });
 
 
