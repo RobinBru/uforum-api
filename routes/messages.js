@@ -87,12 +87,14 @@ function formatAnswer(answer, userId) {
       return User.findById(answer.author).exec();
     })
     .then(result => {
+      const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      let formatted_date = answer.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
       return {
         id: answer._id,
         title: answer.title,
         type: answer.type.toLowerCase(),
         text: answer.content,
-        postedOn: answer.postedOn,
+        postedOn: formatted_date,
         isAuthor: answer.author == userId,
         upvotes: voteValue,
         hasUpvoted: hasUpvoted,

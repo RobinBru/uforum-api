@@ -143,11 +143,15 @@ function formatQuestion(question, userId) {
         hasUpvoted = 0;
       }
       let voteValue = result.map(up => up.value).reduce((a, b) => a + b, 0);
+
+      const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      let formatted_date = question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + "-" + (current_datetime.getFullYear() % 100);
+
       return {
         id: question._id,
         title: question.title,
         text: question.content,
-        postedOn: question.postedOn,
+        postedOn: formatted_date,
         isAuthor: question.author == userId,
         newestAnswerSince: lastPosted,
         upvotes: voteValue,
