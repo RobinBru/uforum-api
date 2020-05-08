@@ -88,7 +88,7 @@ function formatAnswer(answer, userId) {
     })
     .then(result => {
       const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      let formatted_date = answer.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
+      let formatted_date = "loser2";//answer.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
       return {
         id: answer._id,
         title: answer.title,
