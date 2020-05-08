@@ -167,6 +167,7 @@ function formatQuestion(question, userId) {
       }
     })
     .catch(err => {
+      console.log("error occured")
       return question;
     })
 }
