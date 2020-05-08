@@ -234,6 +234,9 @@ router.put('/:messageId/answers', function(req, res, next) {
       return User.findById(result.author).exec();
     })
     .then(result => {
+      const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      let formatted_date = "loser";//question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
+      
       res.status(200).json({
         id: returnValue._id,
         title: returnValue.title,
@@ -244,6 +247,7 @@ router.put('/:messageId/answers', function(req, res, next) {
         tags: returnValue.tags,
         anonymous: returnValue.anonymous,
         author: result.name,
+        postedOn : formatted_date
       })
     })
     .catch(err => {
@@ -280,6 +284,9 @@ router.put('/:messageId/comments', (req, res, next) => {
       return User.findById(result.author).exec;
     })
     .then(result => {
+      const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      let formatted_date = "loser";//question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
+      
       res.status(200).json({
         id: returnValue._id,
         title: returnValue.title,
@@ -289,7 +296,8 @@ router.put('/:messageId/comments', (req, res, next) => {
         nestedIn: returnValue.nestedIn,
         tags: returnValue.tags,
         anonymous: returnValue.anonymous,
-        author: returnValue.author
+        author: returnValue.author,
+        postedOn: formatted_date
       })
     })
     .catch(err => {

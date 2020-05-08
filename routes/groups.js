@@ -283,6 +283,9 @@ router.put('/:groupId/questions', function(req, res, next) {
     }
   )
   .then(result => {
+    const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let formatted_date = "loser";//question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
+      
     res.status(200).json({
       id: serverResult._id,
       title: serverResult.title,
@@ -290,7 +293,8 @@ router.put('/:groupId/questions', function(req, res, next) {
       group: serverResult.group,
       author: result.name,
       tags: serverResult.tags,
-      anonymous: serverResult.anonymous
+      anonymous: serverResult.anonymous,
+      postedOn: formatted_date
     })
   })
   .catch(err => {
