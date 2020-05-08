@@ -87,14 +87,12 @@ function formatAnswer(answer, userId) {
       return User.findById(answer.author).exec();
     })
     .then(result => {
-      const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      let formatted_date = "loser2";//answer.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
       return {
         id: answer._id,
         title: answer.title,
         type: answer.type.toLowerCase(),
         text: answer.content,
-        postedOn: formatted_date,
+        postedOn: formatReturndate(answer.postedOn),
         isAuthor: answer.author == userId,
         upvotes: voteValue,
         hasUpvoted: hasUpvoted,
@@ -234,9 +232,6 @@ router.put('/:messageId/answers', function(req, res, next) {
       return User.findById(result.author).exec();
     })
     .then(result => {
-      const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      let formatted_date = "loser";//question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
-      
       res.status(200).json({
         id: returnValue._id,
         title: returnValue.title,
@@ -247,7 +242,7 @@ router.put('/:messageId/answers', function(req, res, next) {
         tags: returnValue.tags,
         anonymous: returnValue.anonymous,
         author: result.name,
-        postedOn : formatted_date
+        postedOn : formatReturndate(question.postedOn)
       })
     })
     .catch(err => {
@@ -284,9 +279,6 @@ router.put('/:messageId/comments', (req, res, next) => {
       return User.findById(result.author).exec;
     })
     .then(result => {
-      const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      let formatted_date = "loser";//question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
-      
       res.status(200).json({
         id: returnValue._id,
         title: returnValue.title,
@@ -297,7 +289,7 @@ router.put('/:messageId/comments', (req, res, next) => {
         tags: returnValue.tags,
         anonymous: returnValue.anonymous,
         author: returnValue.author,
-        postedOn: formatted_date
+        postedOn: formatReturndate(question.postedOn)
       })
     })
     .catch(err => {
@@ -305,5 +297,13 @@ router.put('/:messageId/comments', (req, res, next) => {
       console.log(err);
     });
 });
+
+function formatReturndate(date){
+  const ye = new Intl.DateTimeFormat('en', { year: '2-digit' }).format(date)
+  const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(date)
+  const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date)
+
+  return (`${da} ${mo} ${ye}`)
+}
 
 module.exports = router;

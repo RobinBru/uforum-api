@@ -145,16 +145,12 @@ function formatQuestion(question, userId) {
       }
       let voteValue = result.map(up => up.value).reduce((a, b) => a + b, 0);
 
-      const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      let formatted_date = "loser";//question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
-      console.log(formatted_date);
-      console.log("werkt de lijn erna dan wel??");
 
       return {
         id: question._id,
         title: question.title,
         text: question.content,
-        postedOn: formatted_date,
+        postedOn: formatReturndate(question.postedOn),
         isAuthor: question.author == userId,
         newestAnswerSince: lastPosted,
         upvotes: voteValue,
@@ -283,9 +279,6 @@ router.put('/:groupId/questions', function(req, res, next) {
     }
   )
   .then(result => {
-    const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    let formatted_date = "loser";//question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + " " + (current_datetime.getFullYear() % 100);
-      
     res.status(200).json({
       id: serverResult._id,
       title: serverResult.title,
@@ -294,7 +287,7 @@ router.put('/:groupId/questions', function(req, res, next) {
       author: result.name,
       tags: serverResult.tags,
       anonymous: serverResult.anonymous,
-      postedOn: formatted_date
+      postedOn: formatReturndate(question.postedOn)
     })
   })
   .catch(err => {
@@ -303,5 +296,12 @@ router.put('/:groupId/questions', function(req, res, next) {
   });
 });
 
+function formatReturndate(date){
+  const ye = new Intl.DateTimeFormat('en', { year: '2-digit' }).format(date)
+  const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(date)
+  const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date)
+
+  return (`${da} ${mo} ${ye}`)
+}
 
 module.exports = router;
