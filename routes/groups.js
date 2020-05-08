@@ -18,7 +18,14 @@ router.get('/', function(req, res, next) {
     page = 1
   }
   let start = (page - 1) * pageLength;
-  let regex = new RegExp(name.trim());
+  let valid = true;
+  let regex;
+  try {
+    regex = new RegExp(name.trim());
+  } catch (e) {
+    valid = false;
+    regex = new RegExp(".*");
+  }
 
   Group.find({ public: true, name: { $regex: regex, $options: "i" } })
     .sort({ name: 1 })
@@ -27,6 +34,9 @@ router.get('/', function(req, res, next) {
     .populate("admins", "_id name email_address")
     .exec()
     .then(result => {
+      if (!valid) {
+        result = [];
+      }
       let pagesLeft = result.length > pageLength;
       result = result.slice(0, pageLength);
       res.json({
@@ -106,6 +116,7 @@ function formatQuestion(question, userId) {
   let lastPosted;
   let hints;
   let answers;
+  let author;
   return Message.find({ nestedIn: question._id })
     .select('type postedOn')
     .sort({ postedOn: -1 })
@@ -118,7 +129,11 @@ function formatQuestion(question, userId) {
       }
       hints = result.filter(mes => mes.type === "Hint").length;
       answers = result.filter(mes => mes.type === "Answer").length;
-      return Upvote.find({ message: question._id }).exec()
+      return User.findById(question.author).exec();
+    })
+    .then(result => {
+      author = result.name;
+      return Upvote.find({ message: question._id }).exec();
     })
     .then(result => {
       let hasUpvoted = result.find(val => val.user == userId);
@@ -139,7 +154,9 @@ function formatQuestion(question, userId) {
         hasUpvoted: hasUpvoted,
         answers: answers,
         hints: hints,
-        tags: question.tags
+        tags: question.tags,
+        anonymous: question.anonymous,
+        author: author
       }
     })
     .catch(err => {
@@ -183,8 +200,13 @@ router.get('/:groupId/questions', function(req, res, next) {
     page = 1
   }
   let findParameters = { group: req.params.groupId, type: "Question" }
+  let valid = true;
   if (searchQuery) {
-    findParameters.title = new RegExp(`.*${searchQuery}.*`, "i");
+    try {
+      findParameters.title = new RegExp(`.*${searchQuery}.*`, "i");
+    } catch (e) {
+      valid = false;
+    }
   }
   let start = (page - 1) * pageLength;
   let pagesLeft;
@@ -207,6 +229,9 @@ router.get('/:groupId/questions', function(req, res, next) {
     .limit(pageLength + 1)
     .exec()
     .then(result => {
+      if (!valid) {
+        return [];
+      }
       pagesLeft = result.length > pageLength;
       result = result.slice(0, pageLength).map(mess => formatQuestion(mess, userId))
       return Promise.all(result);
@@ -231,6 +256,7 @@ router.get('/:groupId/questions', function(req, res, next) {
 });
 
 router.put('/:groupId/questions', function(req, res, next) {
+  let serverResult;
   let questObj = new Message({
     _id: new mongoose.Types.ObjectId(),
     title: req.body.title,
@@ -239,25 +265,30 @@ router.put('/:groupId/questions', function(req, res, next) {
     author: req.body.author,
     group: req.params.groupId,
     postedOn: Date.now(),
-    tags: req.body.tags
+    tags: req.body.tags,
+    anonymous: req.body.anonymous
   });
   questObj.save()
-    .then(result => {
-
-
-      res.status(200).json({
-        id: result._id,
-        title: result.title,
-        text: result.content,
-        group: result.group,
-        author: result.author,
-        tags: result.tags
-      })
+  .then(result => {
+      serverResult = result;
+      return User.findById(serverResult.author).exec();
+    }
+  )
+  .then(result => {
+    res.status(200).json({
+      id: serverResult._id,
+      title: serverResult.title,
+      text: serverResult.content,
+      group: serverResult.group,
+      author: result.name,
+      tags: serverResult.tags,
+      anonymous: serverResult.anonymous
     })
-    .catch(err => {
-      res.status(400).json({ message: err.message });
-      console.log(err);
-    });
+  })
+  .catch(err => {
+    res.status(400).json({ message: err.message });
+    console.log(err);
+  });
 });
 
 

@@ -9,7 +9,8 @@ const messageScheme = new mongoose.Schema({
   group: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Group" },
   nestedIn: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
   postedOn: { type: Date, required: true, default: Date.now() },
-  tags: { type: [{ type: String }], default: [] }
+  tags: { type: [{ type: String }], default: [] },
+  anonymous: {type: Boolean, required: true}
 });
 
 module.exports = mongoose.model("Message", messageScheme);
