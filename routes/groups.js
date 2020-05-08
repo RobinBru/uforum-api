@@ -113,6 +113,7 @@ router.put('/', function(req, res, next) {
 });
 
 function formatQuestion(question, userId) {
+  console.log("teeeeeeeeest");
   let lastPosted;
   let hints;
   let answers;
