@@ -141,3 +141,18 @@ router.put('/:userId/pins', (req, res, next) => {
     });
   });
 });
+
+/*Add message to read messages*/
+router.put('/:userId/read', (req, res, next) => {
+  User.findById(req.params.userId)
+  .then((result) => {
+    User.updateOne({ _id: req.params.userId }, { read: { [...result.read, req.body.messageId] }})
+    .then(() => {
+      res.status(202).send("ok")
+    })
+    .catch(err => {
+      res.status(400).send("fail");
+      console.log(err);
+    });
+  });
+});

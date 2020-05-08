@@ -10,7 +10,8 @@ const userScheme = new mongoose.Schema({
         match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
     },
     psw: { type: String, required: true},
-    pins: { type: [{ type: String }], default: [] }
+    pins: { type: [{ type: String }], default: [] },
+    read: { type: [{ type: String }], default: [] }
 
 
 });
