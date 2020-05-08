@@ -146,7 +146,7 @@ function formatQuestion(question, userId) {
 
       const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       let formatted_date = question.postedOn.getDate() + " " + months[current_datetime.getMonth()] + "-" + (current_datetime.getFullYear() % 100);
-      println(formatted_date);
+      console.log(formatted_date);
 
       return {
         id: question._id,
