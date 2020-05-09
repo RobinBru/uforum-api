@@ -136,10 +136,10 @@ function updateUpvote(messageId, userId, value, res) {
     .exec()
     .then(result => {
       if (result) {
+        Message.findByIdAndUpdate({ messageId }, { upvotes: { $inc: value } })
         res.status(200).send("ok");
       }
     });
-  Message.findByIdAndUpdate({ messageId }, { upvotes: { $inc: value } })
 }
 
 function addUpvote(messageId, userId, value, res) {
