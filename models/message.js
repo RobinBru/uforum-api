@@ -10,7 +10,8 @@ const messageScheme = new mongoose.Schema({
   nestedIn: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
   postedOn: { type: Date, required: true, default: Date.now() },
   tags: { type: [{ type: String }], default: [] },
-  anonymous: {type: Boolean, required: true}
+  anonymous: { type: Boolean, required: true },
+  upvotes: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model("Message", messageScheme);

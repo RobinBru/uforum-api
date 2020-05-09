@@ -36,16 +36,14 @@ router.get('/:messageId', function(req, res, next) {
       }
       hintCount = result.filter(mes => mes.type === "Hint").length;
       answerCount = result.filter(mes => mes.type === "Answer").length;
-      return Upvote.find({ message: message._id }).exec()
+      return Upvote.findOne({ message: message._id, user: userId }).exec()
     })
     .then(result => {
-      let hasUpvoted = result.find(val => val.user == userId);
-      if (hasUpvoted) {
-        hasUpvoted = hasUpvoted.value;
+      if (result) {
+        hasUpvoted = result.value;
       } else {
         hasUpvoted = 0;
       }
-      let voteValue = result.map(up => up.value).reduce((a, b) => a + b, 0);
       res.status(200).json({
         id: message._id,
         title: message.title,
@@ -55,7 +53,7 @@ router.get('/:messageId', function(req, res, next) {
         postedOn: message.postedOn,
         isAuthor: message.author == userId,
         newestAnswerSince: lastPosted,
-        upvotes: voteValue,
+        upvotes: message.upvotes,
         hasUpvoted: hasUpvoted,
         answers: answerCount,
         hints: hintCount,
@@ -73,17 +71,15 @@ function formatAnswer(answer, userId) {
   let hasUpvoted;
   let voteValue;
   let author;
-  return Upvote.find({ message: answer._id })
+  return Upvote.findOne({ message: answer._id, user: userId })
     .select("user value")
     .exec()
     .then(result => {
-      hasUpvoted = result.find(val => val.user == userId);
-      if (hasUpvoted) {
-        hasUpvoted = hasUpvoted.value;
+      if (result) {
+        hasUpvoted = result.value;
       } else {
         hasUpvoted = 0;
       }
-      voteValue = result.map(up => up.value).reduce((a, b) => a + b, 0);
       return User.findById(answer.author).exec();
     })
     .then(result => {
@@ -94,7 +90,7 @@ function formatAnswer(answer, userId) {
         text: answer.content,
         postedOn: formatReturndate(answer.postedOn),
         isAuthor: answer.author == userId,
-        upvotes: voteValue,
+        upvotes: answer.upvotes,
         hasUpvoted: hasUpvoted,
         tags: answer.tags,
         anonymous: answer.anonymous,
@@ -106,7 +102,6 @@ function formatAnswer(answer, userId) {
         .select('content')
         .exec()
         .then(comments => {
-          console.log(comments);
           comments = comments.map(comment => comment.content);
           result.comments = comments;
           return result;
@@ -223,7 +218,8 @@ router.put('/:messageId/answers', function(req, res, next) {
         nestedIn: result._id,
         postedOn: Date.now(),
         tags: req.body.tags,
-        anonymous: req.body.anonymous
+        anonymous: req.body.anonymous,
+        upvotes: 0
       });
       return messageObj.save();
     })
@@ -242,7 +238,7 @@ router.put('/:messageId/answers', function(req, res, next) {
         tags: returnValue.tags,
         anonymous: returnValue.anonymous,
         author: result.name,
-        postedOn : formatReturndate(returnValue.postedOn)
+        postedOn: formatReturndate(returnValue.postedOn)
       })
     })
     .catch(err => {
@@ -270,7 +266,8 @@ router.put('/:messageId/comments', (req, res, next) => {
         nestedIn: result._id,
         postedOn: Date.now(),
         tags: req.body.tags,
-        anonymous: req.body.anonymous
+        anonymous: req.body.anonymous,
+        upvotes: 0
       });
       return messageObj.save();
     })
@@ -298,7 +295,7 @@ router.put('/:messageId/comments', (req, res, next) => {
     });
 });
 
-function formatReturndate(date){
+function formatReturndate(date) {
   const ye = new Intl.DateTimeFormat('en', { year: '2-digit' }).format(date)
   const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(date)
   const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date)
