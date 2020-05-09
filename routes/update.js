@@ -132,7 +132,7 @@ router.patch('/message/:messageId/upvotes', (req, res, next) => {
 
 
 function updateUpvote(messageId, userId, value, res) {
-  Upvote.findOneAndUpdate({ message: messageId, user: userId }, { user: userId, { $inc: { value: value } } })
+  Upvote.findOneAndUpdate({ message: messageId, user: userId }, { user: userId, $inc: { value: value } })
     .exec()
     .then(result => {
       if (result) {
