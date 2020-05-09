@@ -132,16 +132,23 @@ router.patch('/message/:messageId/upvotes', (req, res, next) => {
 
 
 function updateUpvote(messageId, userId, value, res) {
-  Upvote.findOneAndUpdate({ message: messageId, user: userId }, { user: userId, value: { $inc: value } })
+  Upvote.findOneAndUpdate({ message: messageId, user: userId }, { user: userId, { $inc: { value: value } } })
     .exec()
     .then(result => {
       if (result) {
-        Message.findByIdAndUpdate({ messageId }, { upvotes: { $inc: value } })
+        Message.findByIdAndUpdate({ messageId }, { $inc: { upvotes: value } })
           .exec()
           .then(() => {
             res.status(200).send("ok");
+          })
+          .catch(err => {
+            console.log(err);
+            res.status(500).send({ message: err.message });
           });
       }
+    }).catch(err => {
+      console.log(err);
+      res.status(500).send({ message: err.message });
     });
 }
 
