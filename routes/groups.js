@@ -227,23 +227,22 @@ router.get('/:groupId/questions', function(req, res, next) {
         break;
     }
   }
+  let sortParams = { postedOn: -1 }
+  if (req.query.sort === "upvotes") {
+    sortParams = { upvotes: -1 }
+  }
   Message.find(findParameters)
-    .sort({ postedOn: -1 })
+    .sort(sortParams)
     .skip(start)
     .limit(pageLength + 1)
     .exec()
     .then(result => {
-      if (!valid) {
-        return [];
-      }
       pagesLeft = result.length > pageLength;
       result = result.slice(0, pageLength).map(mess => formatQuestion(mess, userId))
       return Promise.all(result);
     })
     .then(result => {
-      if (req.query.sort === "upvotes") {
-        result = result.sort((a, b) => b.upvotes - a.upvotes);
-      }
+
       res.status(200).json({
         page: page,
         count: result.length,
@@ -273,30 +272,29 @@ router.put('/:groupId/questions', function(req, res, next) {
     anonymous: req.body.anonymous
   });
   questObj.save()
-  .then(result => {
+    .then(result => {
       serverResult = result;
       return User.findById(serverResult.author).exec();
-    }
-  )
-  .then(result => {
-    res.status(200).json({
-      id: serverResult._id,
-      title: serverResult.title,
-      text: serverResult.content,
-      group: serverResult.group,
-      author: result.name,
-      tags: serverResult.tags,
-      anonymous: serverResult.anonymous,
-      postedOn: formatReturndate(serverResult.postedOn)
     })
-  })
-  .catch(err => {
-    res.status(400).json({ message: err.message });
-    console.log(err);
-  });
+    .then(result => {
+      res.status(200).json({
+        id: serverResult._id,
+        title: serverResult.title,
+        text: serverResult.content,
+        group: serverResult.group,
+        author: result.name,
+        tags: serverResult.tags,
+        anonymous: serverResult.anonymous,
+        postedOn: formatReturndate(serverResult.postedOn)
+      })
+    })
+    .catch(err => {
+      res.status(400).json({ message: err.message });
+      console.log(err);
+    });
 });
 
-function formatReturndate(date){
+function formatReturndate(date) {
   const ye = new Intl.DateTimeFormat('en', { year: '2-digit' }).format(date)
   const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(date)
   const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date)
