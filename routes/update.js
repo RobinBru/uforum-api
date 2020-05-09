@@ -173,8 +173,8 @@ function addUpvote(messageId, userId, value, res) {
             value: value
           });
           upvote.save();
-          message.overwrite({ upvotes: message.upvotes + value });
           console.log(message);
+          message.overwrite({ upvotes: message.upvotes + value });
           message.save()
           res.status(200).send("ok")
         }).catch(err => {
