@@ -174,6 +174,7 @@ function addUpvote(messageId, userId, value, res) {
           });
           upvote.save();
           message.overwrite({ upvotes: message.upvotes + value });
+          console.log(message);
           message.save()
           res.status(200).send("ok")
         }).catch(err => {
