@@ -242,7 +242,7 @@ router.put('/:messageId/answers', function(req, res, next) {
         tags: returnValue.tags,
         anonymous: returnValue.anonymous,
         author: result.name,
-        postedOn : formatReturndate(question.postedOn)
+        postedOn : formatReturndate(returnValue.postedOn)
       })
     })
     .catch(err => {
@@ -289,7 +289,7 @@ router.put('/:messageId/comments', (req, res, next) => {
         tags: returnValue.tags,
         anonymous: returnValue.anonymous,
         author: returnValue.author,
-        postedOn: formatReturndate(question.postedOn)
+        postedOn: formatReturndate(returnValue.postedOn)
       })
     })
     .catch(err => {

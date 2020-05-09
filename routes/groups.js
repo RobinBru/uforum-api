@@ -287,7 +287,7 @@ router.put('/:groupId/questions', function(req, res, next) {
       author: result.name,
       tags: serverResult.tags,
       anonymous: serverResult.anonymous,
-      postedOn: formatReturndate(question.postedOn)
+      postedOn: formatReturndate(serverResult.postedOn)
     })
   })
   .catch(err => {
