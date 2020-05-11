@@ -75,6 +75,7 @@ function readMessage(messageId, userId) {
     User.updateOne({ _id: userId }, { read: [...result.read, messageId] })
     .then(() => {
       res.status(202).send("ok")
+      console.log("Hello from the otter slide")
     })
     .catch(err => {
       res.status(400).send("fail");
