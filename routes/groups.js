@@ -196,6 +196,7 @@ router.get('/:groupId/questions', function(req, res, next) {
   let userId = req.query.userId;
   let dateParam = req.query.date;
   let searchQuery = req.query.search;
+  let pinListId;
   if (!userId) {
     return res.status(400).json({ message: "Unknown userId" })
   }
@@ -235,24 +236,42 @@ router.get('/:groupId/questions', function(req, res, next) {
   User.findById(userId)
     .exec()
     .then(result => {
+      pinListId = result.pins;
       return result.pins;
+    })
+    .then(pinList => {
+      Message.find({
+        group: req.params.groupId,
+        _id: {$in: pinList}
+      })
+      .exec()
     })
     .then(pinList => {
       Message.find(findParameters)
         .sort(sortParams)
         .skip(start)
-        .limit(pageLength + 1)
+        .limit((pageLength + 1) * 2)
         .exec()
         .then(result => {
           pagesLeft = result.length > pageLength;
+
+
+          result = result.filter(mess => {
+            return !pinListId.includes(mess._id);
+          });
+          result = [...pinList, ...result]
+
+
           result = result.slice(0, pageLength).map(mess => {
-            let isPinned = pinList.includes(mess._id);
+            let isPinned = pinListId.includes(mess._id);
             return formatQuestion(mess, userId, isPinned);
           })
           return Promise.all(result);
         })
         .then(result => {
-
+          if (req.query.sort === "pinned"){
+            result = [...result.filter(m => m.isPinned), ...result.filter(m => !m.isPinned)]
+          }
           res.status(200).json({
             page: page,
             count: result.length,
