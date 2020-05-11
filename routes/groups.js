@@ -112,8 +112,7 @@ router.put('/', function(req, res, next) {
     });
 });
 
-function formatQuestion(question, userId) {
-  console.log("teeeeeeeeest");
+function formatQuestion(question, userId, isPinned) {
   let lastPosted;
   let hints;
   let answers;
@@ -159,7 +158,8 @@ function formatQuestion(question, userId) {
         hints: hints,
         tags: question.tags,
         anonymous: question.anonymous,
-        author: author
+        author: author,
+        isPinned: isPinned
       }
     })
     .catch(err => {
@@ -231,67 +231,43 @@ router.get('/:groupId/questions', function(req, res, next) {
   if (req.query.sort === "upvotes") {
     sortParams = { upvotes: -1 }
   }
-  Message.find(findParameters)
-    .sort(sortParams)
-    .skip(start)
-    .limit(pageLength + 1)
+
+  User.findById(userId)
     .exec()
     .then(result => {
-      pagesLeft = result.length > pageLength;
-      result = result.slice(0, pageLength).map(mess => formatQuestion(mess, userId))
-      return Promise.all(result);
+      return result.pins;
     })
-    .then(result => {
+    .then(pinList => {
+      Message.find(findParameters)
+        .sort(sortParams)
+        .skip(start)
+        .limit(pageLength + 1)
+        .exec()
+        .then(result => {
+          pagesLeft = result.length > pageLength;
+          result = result.slice(0, pageLength).map(mess => {
+            let isPinned = pinList.includes(mess._id);
+            return formatQuestion(mess, userId, isPinned);
+          })
+          return Promise.all(result);
+        })
+        .then(result => {
 
-      res.status(200).json({
-        page: page,
-        count: result.length,
-        startIndex: start,
-        endIndex: start + result.length,
-        pagesLeft: pagesLeft,
-        questions: result
-      });
-    })
-    .catch(err => {
-      res.status(400).json({ message: err.message });
-      console.log(err);
-    });
-});
-
-router.put('/:groupId/questions', function(req, res, next) {
-  let serverResult;
-  let questObj = new Message({
-    _id: new mongoose.Types.ObjectId(),
-    title: req.body.title,
-    content: req.body.text,
-    type: "Question",
-    author: req.body.author,
-    group: req.params.groupId,
-    postedOn: Date.now(),
-    tags: req.body.tags,
-    anonymous: req.body.anonymous
-  });
-  questObj.save()
-    .then(result => {
-      serverResult = result;
-      return User.findById(serverResult.author).exec();
-    })
-    .then(result => {
-      res.status(200).json({
-        id: serverResult._id,
-        title: serverResult.title,
-        text: serverResult.content,
-        group: serverResult.group,
-        author: result.name,
-        tags: serverResult.tags,
-        anonymous: serverResult.anonymous,
-        postedOn: formatReturndate(serverResult.postedOn)
-      })
-    })
-    .catch(err => {
-      res.status(400).json({ message: err.message });
-      console.log(err);
-    });
+          res.status(200).json({
+            page: page,
+            count: result.length,
+            startIndex: start,
+            endIndex: start + result.length,
+            pagesLeft: pagesLeft,
+            questions: result
+          });
+        })
+        .catch(err => {
+          res.status(400).json({ message: err.message });
+          console.log(err);
+        });
+      }
+    )
 });
 
 function formatReturndate(date) {
