@@ -255,12 +255,12 @@ router.get('/:groupId/questions', function(req, res, next) {
         .then(result => {
           pagesLeft = result.length > pageLength;
 
-
-          result = result.filter(mess => {
-            return !pinListId.includes(mess._id);
-          });
-          result = [...pinList, ...result]
-
+          if(req.query.sort === "pinned"){
+            result = result.filter(mess => {
+              return !pinListId.includes(mess._id);
+            });
+            result = [...pinList, ...result]
+          }
 
           result = result.slice(0, pageLength).map(mess => {
             let isPinned = pinListId.includes(mess._id);
@@ -269,9 +269,7 @@ router.get('/:groupId/questions', function(req, res, next) {
           return Promise.all(result);
         })
         .then(result => {
-          if (req.query.sort === "pinned"){
-            result = [...result.filter(m => m.isPinned), ...result.filter(m => !m.isPinned)]
-          }
+
           res.status(200).json({
             page: page,
             count: result.length,
