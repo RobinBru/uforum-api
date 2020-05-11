@@ -145,20 +145,7 @@ router.put('/:userId/pins', (req, res, next) => {
       }
       User.updateOne({ _id: req.params.userId }, { pins: newPins })
         .then(result2 => {
-          res.status(202).json({
-            id: result2._id,
-            title: result2.title,
-            text: result2.content,
-            group: result2.group,
-            type: result2.type.toLowerCase(),
-            nestedIn: result2.nestedIn,
-            tags: result2.tags,
-            anonymous: result2.anonymous,
-            author: result2.name,
-            postedOn: formatReturndate(result2.postedOn),
-            isPinned: !pinres,
-            isRead: false
-          })
+          res.status(202).send(!pinres)
         })
         .catch(err => {
           res.status(400).send("fail");
