@@ -8,6 +8,7 @@ const Group = require('../models/group');
 const User = require('../models/user')
 
 router.get('/:messageId', function(req, res, next) {
+  readMessage(req.params.messageId, req.query.userId)
   let userId = req.query.userId;
   if (!userId) {
     return res.status(400).json({ message: "Unknown userId" })
@@ -16,6 +17,7 @@ router.get('/:messageId', function(req, res, next) {
   let lastPosted;
   let hintCount;
   let answerCount;
+
   Message.findById(req.params.messageId)
     .exec()
     .then(result => {
@@ -66,6 +68,21 @@ router.get('/:messageId', function(req, res, next) {
     });
 
 });
+
+function readMessage(messageId, userId) {
+  User.findById(userId)
+  .then((result) => {
+    User.updateOne({ _id: userId }, { read: [...result.read, messageId] })
+    .then(() => {
+      res.status(202).send("ok")
+    })
+    .catch(err => {
+      res.status(400).send("fail");
+      console.log(err);
+    });
+  });
+}
+
 
 function formatAnswer(answer, userId) {
   let hasUpvoted;
