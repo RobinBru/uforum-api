@@ -134,7 +134,7 @@ router.put('/:userId/pins', (req, res, next) => {
     .then((result) => {
       let newPins = result.pins;
       if(result.pins.includes(req.body.messageId)){
-        const index = array.indexOf(req.body.messageId);
+        const index = newPins.indexOf(req.body.messageId);
         newPins.splice(index, 1);
       } else {
         newPins.push(req.body.messageId);
