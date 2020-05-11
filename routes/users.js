@@ -128,11 +128,18 @@ router.delete('/:userId/groups/:groupId', function(req, res, next) {
 module.exports = router;
 
 
-/*Pin a message*/
+/*Toggle pinned message*/
 router.put('/:userId/pins', (req, res, next) => {
   User.findById(req.params.userId)
     .then((result) => {
-      User.updateOne({ _id: req.params.userId }, { pins: [...result.pins, req.body.messageId] })
+      let newPins = result.pins;
+      if(result.pins.includes(req.body.messageId)){
+        const index = array.indexOf(req.body.messageId);
+        newPins.splice(index, 1);
+      } else {
+        newPins.push(req.body.messageId);
+      }
+      User.updateOne({ _id: req.params.userId }, { pins: newPins })
         .then(() => {
           res.status(202).send("ok")
         })
