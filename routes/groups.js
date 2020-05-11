@@ -250,7 +250,7 @@ router.get('/:groupId/questions', function(req, res, next) {
       .exec();
     })
     .then(pinList => {
-      pinList.splice(0, page*pageLength)
+      pinList.splice(0, (page-1)*pageLength)
       Message.find(findParameters)
         .sort(sortParams)
         .skip(start)
