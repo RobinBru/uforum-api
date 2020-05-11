@@ -278,7 +278,7 @@ router.get('/:groupId/questions', function(req, res, next) {
             count: result.length,
             startIndex: start,
             endIndex: start + result.length,
-            pagesLeft: true,
+            pagesLeft: pagesLeft,
             questions: result
           });
         })
