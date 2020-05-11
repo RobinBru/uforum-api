@@ -239,7 +239,8 @@ router.put('/:messageId/answers', function(req, res, next) {
         anonymous: returnValue.anonymous,
         author: result.name,
         postedOn: formatReturndate(returnValue.postedOn),
-        isPinned: false
+        isPinned: false,
+        isRead: false
       })
     })
     .catch(err => {
@@ -288,7 +289,8 @@ router.put('/:messageId/comments', (req, res, next) => {
         anonymous: returnValue.anonymous,
         author: returnValue.author,
         postedOn: formatReturndate(returnValue.postedOn),
-        isPinned: false
+        isPinned: false,
+        isRead: false
       })
     })
     .catch(err => {

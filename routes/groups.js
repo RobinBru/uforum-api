@@ -112,7 +112,7 @@ router.put('/', function(req, res, next) {
     });
 });
 
-function formatQuestion(question, userId, isPinned) {
+function formatQuestion(question, userId, isPinned, isRead) {
   let lastPosted;
   let hints;
   let answers;
@@ -159,7 +159,8 @@ function formatQuestion(question, userId, isPinned) {
         tags: question.tags,
         anonymous: question.anonymous,
         author: author,
-        isPinned: isPinned
+        isPinned: isPinned,
+        isRead: isRead
       }
     })
     .catch(err => {
@@ -197,6 +198,7 @@ router.get('/:groupId/questions', function(req, res, next) {
   let dateParam = req.query.date;
   let searchQuery = req.query.search;
   let pinListId;
+  let readListId;
   if (!userId) {
     return res.status(400).json({ message: "Unknown userId" })
   }
@@ -237,6 +239,7 @@ router.get('/:groupId/questions', function(req, res, next) {
     .exec()
     .then(result => {
       pinListId = result.pins;
+      readListId = result.read;
       return result.pins;
     })
     .then(pinList => {
@@ -264,7 +267,8 @@ router.get('/:groupId/questions', function(req, res, next) {
 
           result = result.slice(0, pageLength).map(mess => {
             let isPinned = pinListId.includes(mess._id);
-            return formatQuestion(mess, userId, isPinned);
+            let isRead = readListId.includes(mess._id);
+            return formatQuestion(mess, userId, isPinned, isRead);
           })
           return Promise.all(result);
         })
@@ -314,7 +318,8 @@ router.put('/:groupId/questions', function(req, res, next) {
         tags: serverResult.tags,
         anonymous: serverResult.anonymous,
         postedOn: formatReturndate(serverResult.postedOn),
-        isPinned: false
+        isPinned: false,
+        isRead: false
       })
     })
     .catch(err => {
