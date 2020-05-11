@@ -130,10 +130,12 @@ module.exports = router;
 
 /*Toggle pinned message*/
 router.put('/:userId/pins', (req, res, next) => {
+  let pinres;
   User.findById(req.params.userId)
     .then((result) => {
       let newPins = result.pins;
-      if(result.pins.includes(req.body.messageId)){
+      pinres = result.pins.includes(req.body.messageId)
+      if(pinres){
         const index = newPins.indexOf(req.body.messageId);
         newPins.splice(index, 1);
         console.log("pin verwijderd");
@@ -142,8 +144,21 @@ router.put('/:userId/pins', (req, res, next) => {
         console.log("pin toegevoegd");
       }
       User.updateOne({ _id: req.params.userId }, { pins: newPins })
-        .then(() => {
-          res.status(202).send("ok")
+        .then(result2 => {
+          res.status(202).json({
+            id: result2._id,
+            title: result2.title,
+            text: result2.content,
+            group: result2.group,
+            type: result2.type.toLowerCase(),
+            nestedIn: result2.nestedIn,
+            tags: result2.tags,
+            anonymous: result2.anonymous,
+            author: result2.name,
+            postedOn: formatReturndate(result2.postedOn),
+            isPinned: !pinres,
+            isRead: false
+          })
         })
         .catch(err => {
           res.status(400).send("fail");
@@ -151,6 +166,7 @@ router.put('/:userId/pins', (req, res, next) => {
         });
     });
 });
+
 /*Add message to read messages*/
 router.put('/:userId/read', (req, res, next) => {
   User.findById(req.params.userId)
