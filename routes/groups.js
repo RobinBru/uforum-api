@@ -240,11 +240,11 @@ router.get('/:groupId/questions', function(req, res, next) {
       return result.pins;
     })
     .then(pinList => {
-      Message.find({
+      return Message.find({
         group: req.params.groupId,
         _id: {$in: pinList}
       })
-      .exec()
+      .exec();
     })
     .then(pinList => {
       Message.find(findParameters)
