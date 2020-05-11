@@ -269,7 +269,6 @@ router.get('/:groupId/questions', function(req, res, next) {
           return Promise.all(result);
         })
         .then(result => {
-
           res.status(200).json({
             page: page,
             count: result.length,
@@ -285,6 +284,43 @@ router.get('/:groupId/questions', function(req, res, next) {
         });
       }
     )
+});
+
+router.put('/:groupId/questions', function(req, res, next) {
+  let serverResult;
+  let questObj = new Message({
+    _id: new mongoose.Types.ObjectId(),
+    title: req.body.title,
+    content: req.body.text,
+    type: "Question",
+    author: req.body.author,
+    group: req.params.groupId,
+    postedOn: Date.now(),
+    tags: req.body.tags,
+    anonymous: req.body.anonymous
+  });
+  questObj.save()
+    .then(result => {
+      serverResult = result;
+      return User.findById(serverResult.author).exec();
+    })
+    .then(result => {
+      res.status(200).json({
+        id: serverResult._id,
+        title: serverResult.title,
+        text: serverResult.content,
+        group: serverResult.group,
+        author: result.name,
+        tags: serverResult.tags,
+        anonymous: serverResult.anonymous,
+        postedOn: formatReturndate(serverResult.postedOn),
+        isPinned: false
+      })
+    })
+    .catch(err => {
+      res.status(400).json({ message: err.message });
+      console.log(err);
+    });
 });
 
 function formatReturndate(date) {
