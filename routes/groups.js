@@ -243,10 +243,13 @@ router.get('/:groupId/questions', function(req, res, next) {
       return result.pins;
     })
     .then(pinList => {
-      return Message.find({
-        group: req.params.groupId,
-        _id: {$in: pinList}
-      })
+      let searchparams = {group: req.params.groupId, _id: {$in: pinList}}
+      if (searchQuery) {
+        try {
+          searchparams.title = new RegExp(`.*${searchQuery}.*`, "i");
+        } catch (e) {}
+      }
+      return Message.find(searchparams)
       .exec();
     })
     .then(pinList => {
