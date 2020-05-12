@@ -138,10 +138,8 @@ router.put('/:userId/pins', (req, res, next) => {
       if(pinres){
         const index = newPins.indexOf(req.body.messageId);
         newPins.splice(index, 1);
-        console.log("pin verwijderd");
       } else {
         newPins.push(req.body.messageId);
-        console.log("pin toegevoegd");
       }
       User.updateOne({ _id: req.params.userId }, { pins: newPins })
         .then(result2 => {
